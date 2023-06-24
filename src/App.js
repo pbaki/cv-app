@@ -2,6 +2,7 @@ import "./styles/App.css";
 import GeneralInfo from "./components/general-info";
 import Summary from "./components/summary";
 import Education from "./components/education";
+import Experience from "./components/experience";
 
 function App() {
   return (
@@ -9,6 +10,7 @@ function App() {
       <GeneralInfo />
       <Summary />
       <Education />
+      <Experience />
     </div>
   );
 }
