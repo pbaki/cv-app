@@ -6,14 +6,14 @@ import "../styles/education.css";
 class Education extends Component {
   constructor(props) {
     super();
+    this.displayData = [];
+    this.inputStartYear = "";
+    this.inputEndYear = "";
+    this.inputSchoolName = "";
+    this.inputDescription = "";
     this.state = {
       mode: 1,
       cards: [],
-      updatedCards: [],
-      inputStartYear: "",
-      inputEndYear: "",
-      inputSchoolName: "",
-      inputDescription: "",
     };
     this.editMode.bind(this);
     this.getInputValues.bind(this);
@@ -25,24 +25,30 @@ class Education extends Component {
     });
   }
   getInputValues(val1, val2, val3, val4) {
-    this.setState({
-      inputStartYear: val1,
-      inputEndYear: val2,
-      inputSchoolName: val3,
-      inputDescription: val4,
-    });
+    this.inputStartYear = val1;
+    this.inputEndYear = val2;
+    this.inputSchoolName = val3;
+    this.inputDescription = val4;
   }
   addCards() {
-    this.setState({
-      cards: this.state.cards.concat(
+    if (
+      this.inputStartYear !== "" ||
+      this.inputEndYear !== "" ||
+      this.inputSchoolName !== "" ||
+      this.inputDescription !== ""
+    ) {
+      this.displayData.push(
         <EducationCard
-          educationTime={
-            this.state.inputStartYear + " " + this.state.inputEndYear
-          }
-          schoolName={this.state.inputSchoolName}
-          description={this.state.inputDescription}
+          key={uuid()}
+          educationTime={this.inputStartYear + " - " + this.inputEndYear}
+          schoolName={this.inputSchoolName}
+          description={this.inputDescription}
         />
-      ),
+      );
+    }
+
+    this.setState({
+      cards: this.displayData,
     });
   }
   render() {
@@ -67,14 +73,18 @@ class Education extends Component {
               this.addCards();
               this.editMode();
             }}
-            // cancelEducationCard={s}
+            cancelEducationCard={() => {
+              this.editMode();
+            }}
           />
         ) : (
           ""
         )}
         <EducationCard educationTime="123" schoolName="345" description="678" />
         <EducationCard educationTime="123" schoolName="345" description="678" />
-        {}
+        {this.state.cards.map((val) => {
+          return val;
+        })}
       </div>
     );
   }
