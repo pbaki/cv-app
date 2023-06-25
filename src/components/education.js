@@ -7,6 +7,7 @@ class Education extends Component {
   constructor(props) {
     super();
     this.displayData = [];
+    this.tempDisplayData = [];
     this.inputStartYear = "";
     this.inputEndYear = "";
     this.inputSchoolName = "";
@@ -46,9 +47,33 @@ class Education extends Component {
         />
       );
     }
-
     this.setState({
       cards: this.displayData,
+    });
+  }
+  addDeleteCard() {
+    this.displayData.map((val, index) => {
+      let deleteButton2 = (
+        <button
+          onClick={() => {
+            this.displayData.splice(index, 1);
+            this.tempDisplayData.splice(index, 1);
+            this.setState({
+              cards: this.displayData,
+            });
+          }}
+        >
+          Del
+        </button>
+      );
+
+      const ClonedElementWithMoreProps = React.cloneElement(val, {
+        deleteButton: deleteButton2,
+      });
+      this.tempDisplayData[index] = ClonedElementWithMoreProps;
+    });
+    this.setState({
+      cards: this.tempDisplayData,
     });
   }
   render() {
@@ -58,9 +83,17 @@ class Education extends Component {
           <h2>Education</h2>
           <button
             className="editButton"
-            onClick={(e) => {
+            onClick={async (e) => {
               e.preventDefault();
-              this.editMode();
+              const temp = this.editMode();
+              await temp;
+              if (this.state.mode === 2) {
+                this.addDeleteCard();
+              } else {
+                this.setState({
+                  cards: this.displayData,
+                });
+              }
             }}
           >
             Edit
@@ -80,6 +113,7 @@ class Education extends Component {
         ) : (
           ""
         )}
+
         <EducationCard educationTime="123" schoolName="345" description="678" />
         <EducationCard educationTime="123" schoolName="345" description="678" />
         {this.state.cards.map((val) => {
@@ -101,6 +135,7 @@ class EducationCard extends Component {
           <p className="schoolName">{this.props.schoolName}</p>
           <p className="schoolDescripion">{this.props.description}</p>
         </div>
+        {this.props.deleteButton}
       </div>
     );
   }
