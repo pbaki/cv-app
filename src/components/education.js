@@ -56,11 +56,12 @@ class Education extends Component {
       let deleteButton2 = (
         <button
           onClick={() => {
-            this.displayData.splice(index, 1);
-            this.tempDisplayData.splice(index, 1);
+            this.displayData.splice(index - 1, 1);
+            this.tempDisplayData.splice(index - 1, 1);
             this.setState({
-              cards: this.displayData,
+              cards: this.tempDisplayData,
             });
+            this.addDeleteCard();
           }}
         >
           Del
@@ -104,9 +105,12 @@ class Education extends Component {
             addEducationCard={(val1, val2, val3, val4) => {
               this.getInputValues(val1, val2, val3, val4);
               this.addCards();
-              this.editMode();
+              this.addDeleteCard();
             }}
             cancelEducationCard={() => {
+              this.setState({
+                cards: this.displayData,
+              });
               this.editMode();
             }}
           />
