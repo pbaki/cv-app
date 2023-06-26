@@ -96,42 +96,41 @@ class SummaryEditComponent extends Component {
             Edit
           </button>
         </div>
-        <p>
-          <form>
-            <label htmlFor="text"></label>
-            <textarea
-              name="text"
-              id="text"
-              onChange={this.handleChange}
-              defaultValue={
-                this.props.textToEdit !== ""
-                  ? this.props.textToEdit
-                  : "Click Edit to add Summary"
-              }
-            ></textarea>
-            <div className="editSummaryButtons">
-              <button
-                type="submit"
-                onClick={(e) => {
-                  e.preventDefault();
-                  this.props.editedText(this.state.textChange);
-                  this.props.changeToNormalMode();
-                }}
-              >
-                Submit
-              </button>
-              <button
-                type="submit"
-                onClick={(e) => {
-                  e.preventDefault();
-                  this.props.changeToNormalMode();
-                }}
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
-        </p>
+
+        <form>
+          <label htmlFor="text"></label>
+          <textarea
+            name="text"
+            id="text"
+            onChange={this.handleChange}
+            defaultValue={
+              this.props.textToEdit !== ""
+                ? this.props.textToEdit
+                : "Click Edit to add Summary"
+            }
+          ></textarea>
+          <div className="editSummaryButtons">
+            <button
+              type="submit"
+              onClick={(e) => {
+                e.preventDefault();
+                this.props.editedText(this.state.textChange);
+                this.props.changeToNormalMode();
+              }}
+            >
+              Submit
+            </button>
+            <button
+              type="submit"
+              onClick={(e) => {
+                e.preventDefault();
+                this.props.changeToNormalMode();
+              }}
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
       </div>
     );
   }
