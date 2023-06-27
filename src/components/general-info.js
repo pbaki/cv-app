@@ -245,17 +245,132 @@ class ContactForm extends Component {
 class Social extends Component {
   constructor(props) {
     super();
+    this.state = {
+      mode: 1,
+      Instagram: "Your Instagram",
+      Linkedin: "Your Linkedin",
+    };
+    this.editMode = this.editMode.bind(this);
+    this.getValues = this.getValues.bind(this);
+  }
+  editMode() {
+    this.setState({
+      mode: this.state.mode === 1 ? 2 : 1,
+    });
+  }
+  ifMode1() {
+    if (this.state.mode === 1) {
+      return [
+        <p>Instagram: {this.state.Instagram}</p>,
+        <p>Linkedin: {this.state.Linkedin}</p>,
+      ];
+    }
+  }
+  getValues(instagramValue, linkedinValue) {
+    this.setState({
+      Instagram: instagramValue,
+      Linkedin: linkedinValue,
+    });
+  }
+  ifMode2() {
+    if (this.state.mode === 2) {
+      return (
+        <SocialForm
+          instagramDefaultValue={this.state.Instagram}
+          linkedinDefaultValue={this.state.Linkedin}
+          getValues={this.getValues}
+          editMode={this.editMode}
+        />
+      );
+    }
   }
 
   render() {
     return (
-      <div className="social">
+      <div className="Social">
         <div className="socialContainer">
-          <h2>Social</h2>
-          <button className="editButton">Edit</button>
+          <h2>Contact Info</h2>
+          <button
+            className="editButton"
+            onClick={() => {
+              this.editMode();
+            }}
+          >
+            Edit
+          </button>
         </div>
-        <p>instagram: instagram</p>
-        <p>Linkedin: linkedin.com/in/user-name</p>
+        {this.ifMode1()}
+        {this.ifMode2()}
+      </div>
+    );
+  }
+}
+class SocialForm extends Component {
+  constructor(props) {
+    super();
+    this.state = {
+      instagramValue: "",
+      linkedinValue: "",
+    };
+    this.instagramValueHandler = this.instagramValueHandler.bind(this);
+    this.linkedinValueHandler = this.linkedinValueHandler.bind(this);
+  }
+  instagramValueHandler(event) {
+    this.setState({
+      instagramValue: event.target.value,
+    });
+  }
+  linkedinValueHandler(event) {
+    this.setState({
+      linkedinValue: event.target.value,
+    });
+  }
+
+  render() {
+    return (
+      <div className="socialForm">
+        <form>
+          <div className="instagramForm">
+            <label htmlFor="instagramForm"></label>
+            <input
+              type="text"
+              id="instagramForm"
+              name="instagramForm"
+              defaultValue={this.props.instagramDefaultValue}
+              onChange={this.instagramValueHandler}
+            ></input>
+          </div>
+          <div className="linkedinForm">
+            <label htmlFor="linkedinForm"></label>
+            <input
+              type="text"
+              id="linkedinForm"
+              name="linkedinForm"
+              defaultValue={this.props.linkedinDefaultValue}
+              onChange={this.linkedinValueHandler}
+            ></input>
+          </div>
+          <div className="socialButtons">
+            <button
+              type="submit"
+              onClick={(e) => {
+                e.preventDefault();
+                this.props.getValues(
+                  this.state.instagramValue === ""
+                    ? this.props.instagramDefaultValue
+                    : this.state.instagramValue,
+                  this.state.linkedinValue === ""
+                    ? this.props.linkedinDefaultValue
+                    : this.state.linkedinValue
+                );
+                this.props.editMode();
+              }}
+            >
+              Submit
+            </button>
+            <button onClick={this.props.editMode}>Cancel</button>
+          </div>
+        </form>
       </div>
     );
   }
