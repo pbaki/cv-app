@@ -22,3 +22,11 @@
   gap: 10px;
   align-items: center;
 }
+.startingYearExperienceForm,
+.endingYearExperienceForm,
+.companyNameForm,
+.positionNameForm,
+.descriptionExperienceForm {
+  display: flex;
+  flex-direction: column;
+}
