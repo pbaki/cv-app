@@ -92,7 +92,11 @@ class NameForm extends Component {
               type="submit"
               onClick={(e) => {
                 e.preventDefault();
-                this.props.getValue(this.state.onNameChange);
+                this.props.getValue(
+                  this.state.onNameChange === ""
+                    ? this.props.defaultName
+                    : this.state.onNameChange
+                );
                 this.props.editMode();
               }}
             >
@@ -108,6 +112,44 @@ class NameForm extends Component {
 class Contact extends Component {
   constructor(props) {
     super();
+    this.state = {
+      mode: 1,
+      phone: "123456789",
+      email: "asd@qwe",
+    };
+    this.editMode = this.editMode.bind(this);
+    this.getValues = this.getValues.bind(this);
+  }
+  editMode() {
+    this.setState({
+      mode: this.state.mode === 1 ? 2 : 1,
+    });
+  }
+  ifMode1() {
+    if (this.state.mode === 1) {
+      return [
+        <p>Phone: {this.state.phone}</p>,
+        <p>Email: {this.state.email}</p>,
+      ];
+    }
+  }
+  getValues(phoneValue, mailValue) {
+    this.setState({
+      phone: phoneValue,
+      email: mailValue,
+    });
+  }
+  ifMode2() {
+    if (this.state.mode === 2) {
+      return (
+        <ContactForm
+          phoneDefaultValue={this.state.phone}
+          emailDefaultValue={this.state.email}
+          getValues={this.getValues}
+          editMode={this.editMode}
+        />
+      );
+    }
   }
 
   render() {
@@ -115,10 +157,87 @@ class Contact extends Component {
       <div className="contact">
         <div className="contactContainer">
           <h2>Contact Info</h2>
-          <button className="editButton">Edit</button>
+          <button
+            className="editButton"
+            onClick={() => {
+              this.editMode();
+            }}
+          >
+            Edit
+          </button>
         </div>
-        <p>Phone: 123456789</p>
-        <p>Email: asd@asd</p>
+        {this.ifMode1()}
+        {this.ifMode2()}
+      </div>
+    );
+  }
+}
+class ContactForm extends Component {
+  constructor(props) {
+    super();
+    this.state = {
+      phoneValue: "",
+      emailValue: "",
+    };
+    this.phoneValueHandler = this.phoneValueHandler.bind(this);
+    this.emailValueHandler = this.emailValueHandler.bind(this);
+  }
+  phoneValueHandler(event) {
+    this.setState({
+      phoneValue: event.target.value,
+    });
+  }
+  emailValueHandler(event) {
+    this.setState({
+      emailValue: event.target.value,
+    });
+  }
+
+  render() {
+    return (
+      <div className="contactForm">
+        <form>
+          <div className="phoneForm">
+            <label htmlFor="phoneForm"></label>
+            <input
+              type="text"
+              id="phoneForm"
+              name="phoneForm"
+              defaultValue={this.props.phoneDefaultValue}
+              onChange={this.phoneValueHandler}
+            ></input>
+          </div>
+          <div className="emailForm">
+            <label htmlFor="emailForm"></label>
+            <input
+              type="text"
+              id="emailForm"
+              name="emailForm"
+              defaultValue={this.props.emailDefaultValue}
+              onChange={this.emailValueHandler}
+            ></input>
+          </div>
+          <div className="contactButtons">
+            <button
+              type="submit"
+              onClick={(e) => {
+                e.preventDefault();
+                this.props.getValues(
+                  this.state.phoneValue === ""
+                    ? this.props.phoneDefaultValue
+                    : this.state.phoneValue,
+                  this.state.emailValue === ""
+                    ? this.props.emailDefaultValue
+                    : this.state.emailValue
+                );
+                this.props.editMode();
+              }}
+            >
+              Submit
+            </button>
+            <button onClick={this.props.editMode}>Cancel</button>
+          </div>
+        </form>
       </div>
     );
   }
