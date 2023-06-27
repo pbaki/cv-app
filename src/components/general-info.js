@@ -21,13 +21,86 @@ class GeneralInfo extends Component {
 class Name extends Component {
   constructor(props) {
     super();
+    this.state = {
+      mode: 1,
+      name: "Name here",
+    };
+    this.editMode = this.editMode.bind(this);
+    this.onNameChange = this.onNameChange.bind(this);
+  }
+  editMode() {
+    this.setState({
+      mode: this.state.mode === 1 ? 2 : 1,
+    });
+  }
+  onModeChange() {
+    if (this.state.mode === 1) {
+      return <h1>{this.state.name}</h1>;
+    } else {
+      return (
+        <NameForm
+          defaultName={this.state.name}
+          getValue={this.onNameChange}
+          editMode={this.editMode}
+        />
+      );
+    }
+  }
+  onNameChange(value) {
+    this.setState({
+      name: value,
+    });
   }
 
   render() {
     return (
       <div className="name">
-        <h1>Name here</h1>
-        <button className="editButton">Edit</button>
+        {this.onModeChange()}
+        <button className="editButton" onClick={this.editMode}>
+          Edit
+        </button>
+      </div>
+    );
+  }
+}
+class NameForm extends Component {
+  constructor(props) {
+    super();
+    this.state = {
+      onNameChange: "",
+    };
+    this.getTargetValue = this.getTargetValue.bind(this);
+  }
+  getTargetValue(event) {
+    this.setState({
+      onNameChange: event.target.value,
+    });
+  }
+  render() {
+    return (
+      <div className="nameForm">
+        <form>
+          <input
+            type="text"
+            name="name"
+            id="name"
+            defaultValue={this.props.defaultName}
+            onChange={this.getTargetValue}
+          ></input>
+          <div className="nameButtons">
+            <button
+              type="submit"
+              onClick={(e) => {
+                e.preventDefault();
+                this.props.getValue(this.state.onNameChange);
+                this.props.editMode();
+              }}
+            >
+              Submit
+            </button>
+            <button onClick={this.props.editMode}>Cancel</button>
+          </div>
+        </form>
       </div>
     );
   }
