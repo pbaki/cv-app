@@ -128,8 +128,8 @@ class Contact extends Component {
   ifMode1() {
     if (this.state.mode === 1) {
       return [
-        <p>Phone: {this.state.phone}</p>,
-        <p>Email: {this.state.email}</p>,
+        <p key="phone">Phone: {this.state.phone}</p>,
+        <p key="email">Email: {this.state.email}</p>,
       ];
     }
   }
@@ -261,8 +261,8 @@ class Social extends Component {
   ifMode1() {
     if (this.state.mode === 1) {
       return [
-        <p>Instagram: {this.state.Instagram}</p>,
-        <p>Linkedin: {this.state.Linkedin}</p>,
+        <p key="Instagram">Instagram: {this.state.Instagram}</p>,
+        <p key="Linkedin"> Linkedin: {this.state.Linkedin}</p>,
       ];
     }
   }
@@ -287,7 +287,7 @@ class Social extends Component {
 
   render() {
     return (
-      <div className="Social">
+      <div className="Social" key={this.props.key}>
         <div className="socialContainer">
           <h2>Contact Info</h2>
           <button
@@ -406,7 +406,7 @@ class Skills extends Component {
     this.state.skillsList.map((ele, index) => {
       if (this.state.mode === 2) {
         let deleteButton2 = (
-          <inline>
+          <>
             <button
               onClick={() => {
                 this.tempArray.splice(index - 1, 1);
@@ -418,7 +418,7 @@ class Skills extends Component {
             >
               Del
             </button>
-          </inline>
+          </>
         );
         this.tempArray[index] = (
           <SkillListElement
@@ -427,13 +427,11 @@ class Skills extends Component {
           />
         );
       } else {
-        console.log("asd");
         this.tempArray[index] = (
           <SkillListElement skillName={ele.props.skillName} />
         );
       }
     });
-    console.log(this.state.skillsList);
     this.setState({
       skillsList: this.tempArray,
     });
@@ -467,7 +465,7 @@ class Skills extends Component {
 
         <ul>
           {this.state.skillsList.map((val) => {
-            return val;
+            return <div key={uuid()}> {val}</div>;
           })}
         </ul>
       </div>
