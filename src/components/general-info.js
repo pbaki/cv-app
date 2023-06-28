@@ -385,6 +385,7 @@ class Skills extends Component {
     };
     this.editMode = this.editMode.bind(this);
     this.getSkill = this.getSkill.bind(this);
+    this.skillWithDel = this.skillWithDel.bind(this);
   }
   editMode() {
     this.setState({
@@ -393,31 +394,49 @@ class Skills extends Component {
   }
   getSkill(skillName) {
     this.setState({
-      skillsList: this.state.skillsList.concat(<li>{skillName}</li>),
+      skillsList: this.state.skillsList.concat(
+        <SkillListElement
+          skillName={skillName}
+          deleteButton={this.props.deleteButton}
+        />
+      ),
     });
   }
-  addDeleteButton() {
+  skillWithDel() {
     this.state.skillsList.map((ele, index) => {
-      this.tempArray.push(
-        <li key={index}>
+      if (this.state.mode === 2) {
+        let deleteButton2 = (
           <inline>
-            {ele.props.children}
             <button
               onClick={() => {
-                console.log("asd");
+                this.tempArray.splice(index - 1, 1);
+                this.setState({
+                  skillsList: this.tempArray,
+                });
+                this.skillWithDel();
               }}
             >
               Del
             </button>
           </inline>
-        </li>
-      );
+        );
+        this.tempArray[index] = (
+          <SkillListElement
+            skillName={ele.props.skillName}
+            deleteButton={deleteButton2}
+          />
+        );
+      } else {
+        console.log("asd");
+        this.tempArray[index] = (
+          <SkillListElement skillName={ele.props.skillName} />
+        );
+      }
     });
-
+    console.log(this.state.skillsList);
     this.setState({
       skillsList: this.tempArray,
     });
-    this.tempArray = [];
   }
 
   render() {
@@ -429,13 +448,19 @@ class Skills extends Component {
             className="editButton"
             onClick={async () => {
               await this.editMode();
+              this.skillWithDel();
             }}
           >
             Edit
           </button>
         </div>
         {this.state.mode === 2 ? (
-          <SkillsForm editMode={this.editMode} getSkill={this.getSkill} />
+          <SkillsForm
+            editMode={this.editMode}
+            getSkill={this.getSkill}
+            update={this.skillWithDel}
+            delDelButtons={this.skillWithDel}
+          />
         ) : (
           ""
         )}
@@ -445,24 +470,23 @@ class Skills extends Component {
           <li>skill 2</li>
           <li>skill 3</li>
           <li>skill 4</li>
-          {this.state.skillsList.map((ele, index) => {
-            if (this.state.mode === 2) {
-              return (
-                <div>
-                  ele
-                  <button
-                    onClick={() => {
-                      console.log("asd");
-                    }}
-                  >
-                    Del
-                  </button>
-                </div>
-              );
-            }
+          {this.state.skillsList.map((val) => {
+            return val;
           })}
         </ul>
       </div>
+    );
+  }
+}
+class SkillListElement extends Component {
+  constructor(props) {
+    super();
+  }
+  render() {
+    return (
+      <li>
+        {this.props.skillName} {this.props.deleteButton}
+      </li>
     );
   }
 }
@@ -496,15 +520,23 @@ class SkillsForm extends Component {
           <div className="skillsButtons">
             <button
               type="submit"
-              onClick={(e) => {
+              onClick={async (e) => {
                 e.preventDefault();
-                this.props.getSkill(this.state.skillName);
+                await this.props.getSkill(this.state.skillName);
+                this.props.update();
                 //this.props.editMode();
               }}
             >
               Add
             </button>
-            <button onClick={this.props.editMode}>Cancel</button>
+            <button
+              onClick={async () => {
+                await this.props.editMode();
+                this.props.delDelButtons();
+              }}
+            >
+              Cancel
+            </button>
           </div>
         </form>
         <ul>{this.props.listOfSkills}</ul>
