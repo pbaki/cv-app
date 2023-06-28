@@ -378,6 +378,7 @@ class SocialForm extends Component {
 class Skills extends Component {
   constructor(props) {
     super();
+    this.tempArray = [];
     this.state = {
       mode: 1,
       skillsList: [],
@@ -396,22 +397,27 @@ class Skills extends Component {
     });
   }
   addDeleteButton() {
-    const tempArray = this.state.skillsList.map((ele, index) => {
-      const skillName = ele.props.children;
-      return (
+    this.state.skillsList.map((ele, index) => {
+      this.tempArray.push(
         <li key={index}>
-          {skillName}
-          <span>
-            <button onClick={() => this.deleteSkill(index)}>Del</button>{" "}
-            {/* Call a deleteSkill function passing the index */}
-          </span>
+          <inline>
+            {ele.props.children}
+            <button
+              onClick={() => {
+                console.log("asd");
+              }}
+            >
+              Del
+            </button>
+          </inline>
         </li>
       );
     });
 
     this.setState({
-      skillsList: tempArray,
+      skillsList: this.tempArray,
     });
+    this.tempArray = [];
   }
 
   render() {
@@ -423,9 +429,6 @@ class Skills extends Component {
             className="editButton"
             onClick={async () => {
               await this.editMode();
-              if (this.state.mode === 2) {
-                this.addDeleteButton();
-              }
             }}
           >
             Edit
@@ -442,7 +445,22 @@ class Skills extends Component {
           <li>skill 2</li>
           <li>skill 3</li>
           <li>skill 4</li>
-          {this.state.skillsList}
+          {this.state.skillsList.map((ele, index) => {
+            if (this.state.mode === 2) {
+              return (
+                <div>
+                  ele
+                  <button
+                    onClick={() => {
+                      console.log("asd");
+                    }}
+                  >
+                    Del
+                  </button>
+                </div>
+              );
+            }
+          })}
         </ul>
       </div>
     );
@@ -481,10 +499,10 @@ class SkillsForm extends Component {
               onClick={(e) => {
                 e.preventDefault();
                 this.props.getSkill(this.state.skillName);
-                this.props.editMode();
+                //this.props.editMode();
               }}
             >
-              Submit
+              Add
             </button>
             <button onClick={this.props.editMode}>Cancel</button>
           </div>
