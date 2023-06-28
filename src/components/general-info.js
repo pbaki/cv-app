@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom/client";
 import "../styles/general-info.css";
-
+import { v4 as uuid } from "uuid";
 class GeneralInfo extends Component {
   constructor(props) {
     super();
@@ -378,6 +378,40 @@ class SocialForm extends Component {
 class Skills extends Component {
   constructor(props) {
     super();
+    this.state = {
+      mode: 1,
+      skillsList: [],
+    };
+    this.editMode = this.editMode.bind(this);
+    this.getSkill = this.getSkill.bind(this);
+  }
+  editMode() {
+    this.setState({
+      mode: this.state.mode === 1 ? 2 : 1,
+    });
+  }
+  getSkill(skillName) {
+    this.setState({
+      skillsList: this.state.skillsList.concat(<li>{skillName}</li>),
+    });
+  }
+  addDeleteButton() {
+    const tempArray = this.state.skillsList.map((ele, index) => {
+      const skillName = ele.props.children;
+      return (
+        <li key={index}>
+          {skillName}
+          <span>
+            <button onClick={() => this.deleteSkill(index)}>Del</button>{" "}
+            {/* Call a deleteSkill function passing the index */}
+          </span>
+        </li>
+      );
+    });
+
+    this.setState({
+      skillsList: tempArray,
+    });
   }
 
   render() {
@@ -385,14 +419,77 @@ class Skills extends Component {
       <div className="skills">
         <div className="skillsContainer">
           <h2>Skills</h2>
-          <button className="editButton">Edit</button>
+          <button
+            className="editButton"
+            onClick={async () => {
+              await this.editMode();
+              if (this.state.mode === 2) {
+                this.addDeleteButton();
+              }
+            }}
+          >
+            Edit
+          </button>
         </div>
+        {this.state.mode === 2 ? (
+          <SkillsForm editMode={this.editMode} getSkill={this.getSkill} />
+        ) : (
+          ""
+        )}
+
         <ul>
           <li>skill 1</li>
           <li>skill 2</li>
           <li>skill 3</li>
           <li>skill 4</li>
+          {this.state.skillsList}
         </ul>
+      </div>
+    );
+  }
+}
+class SkillsForm extends Component {
+  constructor(props) {
+    super();
+    this.state = {
+      skillName: "",
+    };
+    this.skillInputHandler = this.skillInputHandler.bind(this);
+  }
+  skillInputHandler(event) {
+    this.setState({
+      skillName: event.target.value,
+    });
+  }
+
+  render() {
+    return (
+      <div className="skills">
+        <form>
+          <div className="skillInput">
+            <label htmlFor="skillInput"></label>
+            <input
+              type="text"
+              id="skillInput"
+              name="skillInput"
+              onChange={this.skillInputHandler}
+            ></input>
+          </div>
+          <div className="skillsButtons">
+            <button
+              type="submit"
+              onClick={(e) => {
+                e.preventDefault();
+                this.props.getSkill(this.state.skillName);
+                this.props.editMode();
+              }}
+            >
+              Submit
+            </button>
+            <button onClick={this.props.editMode}>Cancel</button>
+          </div>
+        </form>
+        <ul>{this.props.listOfSkills}</ul>
       </div>
     );
   }
