@@ -118,8 +118,6 @@ class Education extends Component {
           ""
         )}
 
-        <EducationCard educationTime="123" schoolName="345" description="678" />
-        <EducationCard educationTime="123" schoolName="345" description="678" />
         {this.state.cards.map((val) => {
           return val;
         })}

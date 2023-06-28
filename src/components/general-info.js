@@ -466,10 +466,6 @@ class Skills extends Component {
         )}
 
         <ul>
-          <li>skill 1</li>
-          <li>skill 2</li>
-          <li>skill 3</li>
-          <li>skill 4</li>
           {this.state.skillsList.map((val) => {
             return val;
           })}
