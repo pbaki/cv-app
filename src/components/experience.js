@@ -16,6 +16,7 @@ class Experience extends Component {
     this.state = {
       mode: 1,
       cards: [],
+      ifCalled: 0,
     };
     this.editMode = this.editMode.bind(this);
     this.getInputValues = this.getInputValues.bind(this);
@@ -79,6 +80,47 @@ class Experience extends Component {
     this.setState({
       cards: this.tempDisplayData,
     });
+  }
+  componentDidMount() {
+    if (this.state.cards.length === 0 && this.state.ifCalled === 0) {
+      (this.state.cards = [
+        ...this.state.cards,
+        <ExperienceCard
+          key={uuid()}
+          experienceTime={"1800 - 1900"}
+          companyName={"Some Name"}
+          companyPosition={"Some Position"}
+          companyDescription={"Some Description"}
+        />,
+        <ExperienceCard
+          key={uuid()}
+          experienceTime={"1900 - 1920"}
+          companyName={"Some Name"}
+          companyPosition={"Some Position"}
+          companyDescription={"Some Description"}
+        />,
+      ]),
+        (this.displayData = [
+          ...this.displayData,
+          <ExperienceCard
+            key={uuid()}
+            experienceTime={"1800 - 1900"}
+            companyName={"Some Name"}
+            companyPosition={"Some Position"}
+            companyDescription={"Some Description"}
+          />,
+          <ExperienceCard
+            key={uuid()}
+            experienceTime={"1900 - 1920"}
+            companyName={"Some Name"}
+            companyPosition={"Some Position"}
+            companyDescription={"Some Description"}
+          />,
+        ]);
+      this.setState({
+        ifCalled: this.state.ifCalled + 1,
+      });
+    }
   }
 
   render() {
