@@ -15,6 +15,7 @@ class Education extends Component {
     this.state = {
       mode: 1,
       cards: [],
+      ifCalled: 0,
     };
     this.editMode.bind(this);
     this.getInputValues.bind(this);
@@ -76,6 +77,44 @@ class Education extends Component {
     this.setState({
       cards: this.tempDisplayData,
     });
+  }
+  componentDidMount() {
+    if (this.state.cards.length === 0 && this.state.ifCalled === 0) {
+      (this.state.cards = [
+        ...this.state.cards,
+        <EducationCard
+          key={uuid()}
+          educationTime={"1800 - 1900"}
+          schoolName={"Some Name"}
+          description={"Some Description"}
+        />,
+        <EducationCard
+          key={uuid()}
+          educationTime={"1900 - 1920"}
+          schoolName={"Some Name"}
+          description={"Some Description"}
+        />,
+      ]),
+        (this.displayData = [
+          ...this.displayData,
+          <EducationCard
+            key={uuid()}
+            educationTime={"1800 - 1900"}
+            schoolName={"Some Name"}
+            description={"Some Description"}
+          />,
+          <EducationCard
+            key={uuid()}
+            educationTime={"1900 - 1920"}
+            schoolName={"Some Name"}
+            description={"Some Description"}
+          />,
+        ]);
+      this.setState({
+        ifCalled: this.state.ifCalled + 1,
+      });
+    }
+    console.log(this.displayData);
   }
   render() {
     return (
