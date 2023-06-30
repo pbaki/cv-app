@@ -382,6 +382,7 @@ class Skills extends Component {
     this.state = {
       mode: 1,
       skillsList: [],
+      ifCalled: 0,
     };
     this.editMode = this.editMode.bind(this);
     this.getSkill = this.getSkill.bind(this);
@@ -436,6 +437,18 @@ class Skills extends Component {
       skillsList: this.tempArray,
     });
   }
+  componentDidMount() {
+    if (this.state.skillsList.length === 0 && this.state.ifCalled === 0) {
+      this.setState({
+        skillsList: [
+          ...this.state.skillsList,
+          <SkillListElement skillName="Skill 1" />,
+          <SkillListElement skillName="Skill 2" />,
+        ],
+        ifCalled: this.state.ifCalled + 1,
+      });
+    }
+  }
 
   render() {
     return (
@@ -462,7 +475,6 @@ class Skills extends Component {
         ) : (
           ""
         )}
-
         <ul>
           {this.state.skillsList.map((val) => {
             return <div key={uuid()}> {val}</div>;
