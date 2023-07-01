@@ -114,7 +114,11 @@ class SummaryEditComponent extends Component {
               type="submit"
               onClick={(e) => {
                 e.preventDefault();
-                this.props.editedText(this.state.textChange);
+                this.props.editedText(
+                  this.state.textChange === ""
+                    ? this.props.textToEdit
+                    : this.state.textChange
+                );
                 this.props.changeToNormalMode();
               }}
             >
