@@ -1,5 +1,5 @@
 .summary {
-  max-width: 80%;
+  max-width: 96%;
 }
 .summaryContainer {
   display: flex;
@@ -9,4 +9,8 @@
 .editButton {
   height: 20px;
   width: 40px;
+}
+.summary p {
+  max-width: 100%;
+  margin-top: -8px;
 }
