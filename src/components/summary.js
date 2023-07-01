@@ -62,7 +62,7 @@ class SummaryComponent extends Component {
   }
   render() {
     return (
-      <div className="summary">
+      <>
         <div className="summaryContainer">
           <h2>Summary</h2>
           <button className="editButton" onClick={this.props.changeToEditMode}>
@@ -70,7 +70,7 @@ class SummaryComponent extends Component {
           </button>
         </div>
         <p>{this.props.summaryText}</p>
-      </div>
+      </>
     );
   }
 }
@@ -89,7 +89,7 @@ class SummaryEditComponent extends Component {
   }
   render() {
     return (
-      <div className="summary">
+      <>
         <div className="summaryContainer">
           <h2>Summary</h2>
           <button className="editButton" onClick={this.props.onClick}>
@@ -135,7 +135,7 @@ class SummaryEditComponent extends Component {
             </button>
           </div>
         </form>
-      </div>
+      </>
     );
   }
 }

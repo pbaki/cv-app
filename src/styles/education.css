@@ -1,5 +1,5 @@
 .education {
-  max-width: 80%;
+  padding-left: 10px;
 }
 .educationContainer {
   display: flex;
@@ -33,4 +33,15 @@
 }
 .schoolDescripion {
   word-break: break-word;
+}
+.schoolName {
+  font-size: 1.7rem;
+  font-weight: 400;
+  margin-top: 0;
+  margin-bottom: 0px;
+}
+.schoolDescripion {
+  font-size: 1.2rem;
+  font-weight: 350;
+  margin-top: 5px;
 }

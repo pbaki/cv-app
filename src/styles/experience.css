@@ -1,5 +1,5 @@
 .experience {
-  max-width: 80%;
+  padding-left: 10px;
 }
 .experienceContainer {
   display: flex;
@@ -34,4 +34,15 @@
 }
 .companyDescripion {
   word-break: break-word;
+}
+.companyName {
+  font-size: 1.7rem;
+  font-weight: 400;
+  margin-top: 0;
+  margin-bottom: 0px;
+}
+.companyPositon {
+  font-size: 1.2rem;
+  font-weight: 350;
+  margin-top: 5px;
 }
