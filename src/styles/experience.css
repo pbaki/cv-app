@@ -29,3 +29,9 @@
   display: flex;
   flex-direction: column;
 }
+.experienceTime {
+  min-width: 86px;
+}
+.companyDescripion {
+  word-break: break-word;
+}

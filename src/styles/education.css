@@ -28,3 +28,9 @@
   display: flex;
   flex-direction: column;
 }
+.educationTime {
+  min-width: 86px;
+}
+.schoolDescripion {
+  word-break: break-word;
+}
