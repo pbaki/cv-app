@@ -90,14 +90,18 @@ class Experience extends Component {
           experienceTime={"1800 - 1900"}
           companyName={"Some Name"}
           companyPosition={"Some Position"}
-          companyDescription={"Some Description"}
+          companyDescription={
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+          }
         />,
         <ExperienceCard
           key={uuid()}
           experienceTime={"1900 - 1920"}
           companyName={"Some Name"}
           companyPosition={"Some Position"}
-          companyDescription={"Some Description"}
+          companyDescription={
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+          }
         />,
       ]),
         (this.displayData = [
@@ -107,14 +111,18 @@ class Experience extends Component {
             experienceTime={"1800 - 1900"}
             companyName={"Some Name"}
             companyPosition={"Some Position"}
-            companyDescription={"Some Description"}
+            companyDescription={
+              "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+            }
           />,
           <ExperienceCard
             key={uuid()}
             experienceTime={"1900 - 1920"}
             companyName={"Some Name"}
             companyPosition={"Some Position"}
-            companyDescription={"Some Description"}
+            companyDescription={
+              "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+            }
           />,
         ]);
       this.setState({

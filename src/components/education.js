@@ -86,13 +86,17 @@ class Education extends Component {
           key={uuid()}
           educationTime={"1800 - 1900"}
           schoolName={"Some Name"}
-          description={"Some Description"}
+          description={
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+          }
         />,
         <EducationCard
           key={uuid()}
           educationTime={"1900 - 1920"}
           schoolName={"Some Name"}
-          description={"Some Description"}
+          description={
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+          }
         />,
       ]),
         (this.displayData = [
@@ -101,13 +105,17 @@ class Education extends Component {
             key={uuid()}
             educationTime={"1800 - 1900"}
             schoolName={"Some Name"}
-            description={"Some Description"}
+            description={
+              "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+            }
           />,
           <EducationCard
             key={uuid()}
             educationTime={"1900 - 1920"}
             schoolName={"Some Name"}
-            description={"Some Description"}
+            description={
+              "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+            }
           />,
         ]);
       this.setState({
