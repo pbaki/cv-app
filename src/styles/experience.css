@@ -1,5 +1,5 @@
 .experience {
-  max-width: 300px;
+  max-width: 80%;
 }
 .experienceContainer {
   display: flex;
@@ -13,13 +13,12 @@
 .experienceCard {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 20px;
+  gap: 30px;
 }
 .experienceCardCotnainer {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 15px;
   align-items: center;
 }
 .startingYearExperienceForm,

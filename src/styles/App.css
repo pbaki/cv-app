@@ -1,5 +1,9 @@
 .App {
-  display: flex;
-  gap: 30px;
+  display: grid;
+  width: 80vw;
+  max-width: 900px;
+  justify-content: center;
+  grid-template-columns: 1fr 2fr;
+  border: 1px solid black;
   padding: 20px;
 }

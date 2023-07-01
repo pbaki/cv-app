@@ -7,10 +7,14 @@ import Experience from "./components/experience";
 function App() {
   return (
     <div className="App">
-      <GeneralInfo />
-      <Summary />
-      <Education />
-      <Experience />
+      <div className="leftContainer">
+        <GeneralInfo />
+      </div>
+      <div className="rightContainer">
+        <Summary />
+        <Education />
+        <Experience />
+      </div>
     </div>
   );
 }

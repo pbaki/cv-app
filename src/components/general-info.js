@@ -9,12 +9,12 @@ class GeneralInfo extends Component {
 
   render() {
     return (
-      <div>
+      <>
         <Name />
         <Contact />
         <Social />
         <Skills />
-      </div>
+      </>
     );
   }
 }
