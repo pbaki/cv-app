@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import ReactDOM from "react-dom/client";
 import { v4 as uuid } from "uuid";
 import "../styles/education.css";
 
@@ -53,7 +52,7 @@ class Education extends Component {
     });
   }
   addDeleteCard() {
-    this.displayData.map((val, index) => {
+    this.displayData.forEach((val, index) => {
       let deleteButton2 = (
         <button
           onClick={() => {
@@ -74,14 +73,14 @@ class Education extends Component {
       });
       this.tempDisplayData[index] = ClonedElementWithMoreProps;
     });
+
     this.setState({
       cards: this.tempDisplayData,
     });
   }
   componentDidMount() {
     if (this.state.cards.length === 0 && this.state.ifCalled === 0) {
-      (this.state.cards = [
-        ...this.state.cards,
+      this.displayData = [
         <EducationCard
           key={uuid()}
           educationTime={"1800 - 1900"}
@@ -98,31 +97,12 @@ class Education extends Component {
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
           }
         />,
-      ]),
-        (this.displayData = [
-          ...this.displayData,
-          <EducationCard
-            key={uuid()}
-            educationTime={"1800 - 1900"}
-            schoolName={"Some Name"}
-            description={
-              "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-            }
-          />,
-          <EducationCard
-            key={uuid()}
-            educationTime={"1900 - 1920"}
-            schoolName={"Some Name"}
-            description={
-              "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-            }
-          />,
-        ]);
+      ];
       this.setState({
+        cards: this.displayData,
         ifCalled: this.state.ifCalled + 1,
       });
     }
-    console.log(this.displayData);
   }
   render() {
     return (
@@ -288,6 +268,5 @@ class EducationForm extends Component {
     );
   }
 }
-class renderFormData extends Component {}
 
 export default Education;

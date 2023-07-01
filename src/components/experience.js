@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import ReactDOM from "react-dom/client";
 import { v4 as uuid } from "uuid";
 import "../styles/experience.css";
 
@@ -56,7 +55,7 @@ class Experience extends Component {
     });
   }
   addDeleteCard() {
-    this.displayData.map((val, index) => {
+    this.displayData.forEach((val, index) => {
       let deleteButton2 = (
         <button
           onClick={() => {
@@ -83,8 +82,7 @@ class Experience extends Component {
   }
   componentDidMount() {
     if (this.state.cards.length === 0 && this.state.ifCalled === 0) {
-      (this.state.cards = [
-        ...this.state.cards,
+      this.displayData = [
         <ExperienceCard
           key={uuid()}
           experienceTime={"1800 - 1900"}
@@ -103,29 +101,9 @@ class Experience extends Component {
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
           }
         />,
-      ]),
-        (this.displayData = [
-          ...this.displayData,
-          <ExperienceCard
-            key={uuid()}
-            experienceTime={"1800 - 1900"}
-            companyName={"Some Name"}
-            companyPosition={"Some Position"}
-            companyDescription={
-              "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-            }
-          />,
-          <ExperienceCard
-            key={uuid()}
-            experienceTime={"1900 - 1920"}
-            companyName={"Some Name"}
-            companyPosition={"Some Position"}
-            companyDescription={
-              "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-            }
-          />,
-        ]);
+      ];
       this.setState({
+        cards: this.displayData,
         ifCalled: this.state.ifCalled + 1,
       });
     }
