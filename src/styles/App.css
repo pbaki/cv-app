@@ -66,3 +66,8 @@ button:active {
   align-items: center;
   margin: 0;
 }
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
