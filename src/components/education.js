@@ -208,7 +208,6 @@ class EducationForm extends Component {
     return (
       <div className="educationForm">
         <form>
-          <p>Education Details</p>
           <div className="startingYearForm">
             <label htmlFor="startingYearForm">Starting Year:</label>
             <input
