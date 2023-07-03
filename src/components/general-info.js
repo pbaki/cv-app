@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import ReactDOM from "react-dom/client";
 import "../styles/general-info.css";
 import { v4 as uuid } from "uuid";
 class GeneralInfo extends Component {
@@ -404,7 +403,7 @@ class Skills extends Component {
     });
   }
   skillWithDel() {
-    this.state.skillsList.map((ele, index) => {
+    this.state.skillsList.forEach((ele, index) => {
       if (this.state.mode === 2) {
         let deleteButton2 = (
           <>

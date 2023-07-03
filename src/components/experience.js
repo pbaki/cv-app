@@ -147,7 +147,6 @@ class Experience extends Component {
         ) : (
           ""
         )}
-        <ExperienceCard />
         {this.state.cards.map((val) => {
           return val;
         })}
