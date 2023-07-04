@@ -409,7 +409,7 @@ class Skills extends Component {
           <>
             <button
               onClick={() => {
-                this.tempArray.splice(index - 1, 1);
+                this.tempArray.splice(index, 1);
                 this.setState({
                   skillsList: this.tempArray,
                 });

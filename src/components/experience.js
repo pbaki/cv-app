@@ -59,8 +59,8 @@ class Experience extends Component {
       let deleteButton2 = (
         <button
           onClick={() => {
-            this.displayData.splice(index - 1, 1);
-            this.tempDisplayData.splice(index - 1, 1);
+            this.displayData.splice(index, 1);
+            this.tempDisplayData.splice(index, 1);
             this.setState({
               cards: this.tempDisplayData,
             });
