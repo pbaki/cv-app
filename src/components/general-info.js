@@ -9,17 +9,20 @@ class GeneralInfo extends Component {
   render() {
     return (
       <>
-        <Name />
-        <Contact />
-        <Social />
-        <Skills />
+        <Name getName={this.props.getName} />
+        <Contact getPhone={this.props.getPhone} getMail={this.props.getMail} />
+        <Social
+          getInstagram={this.props.getInstagram}
+          getLinkedin={this.props.getLinkedin}
+        />
+        <Skills getSkills={this.props.getSkills} />
       </>
     );
   }
 }
 class Name extends Component {
   constructor(props) {
-    super();
+    super(props);
     this.state = {
       mode: 1,
       name: "Name here",
@@ -50,7 +53,15 @@ class Name extends Component {
       name: value,
     });
   }
+  componentDidMount() {
+    this.props.getName(this.state.name);
+  }
 
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.name !== prevState.name) {
+      this.props.getName(this.state.name);
+    }
+  }
   render() {
     return (
       <div className="name">
@@ -150,7 +161,18 @@ class Contact extends Component {
       );
     }
   }
-
+  componentDidMount() {
+    this.props.getPhone(this.state.phone);
+    this.props.getMail(this.state.email);
+  }
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.phone !== prevState.phone) {
+      this.props.getPhone(this.state.phone);
+    }
+    if (this.state.email !== prevState.email) {
+      this.props.getMail(this.state.email);
+    }
+  }
   render() {
     return (
       <div className="contact">
@@ -283,7 +305,18 @@ class Social extends Component {
       );
     }
   }
-
+  componentDidMount() {
+    this.props.getInstagram(this.state.Instagram);
+    this.props.getLinkedin(this.state.Linkedin);
+  }
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.Instagram !== prevState.Instagram) {
+      this.props.getInstagram(this.state.Instagram);
+    }
+    if (this.state.Linkedin !== prevState.Linkedin) {
+      this.props.getLinkedin(this.state.Linkedin);
+    }
+  }
   render() {
     return (
       <div className="Social" key={this.props.key}>
@@ -446,9 +479,14 @@ class Skills extends Component {
         ],
         ifCalled: this.state.ifCalled + 1,
       });
+      this.props.getSkills(this.state.skillsList);
     }
   }
-
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.skillsList !== prevState.skillsList) {
+      this.props.getSkills(this.state.skillsList);
+    }
+  }
   render() {
     return (
       <div className="skills">

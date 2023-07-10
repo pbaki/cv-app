@@ -44,6 +44,7 @@ class Summary extends Component {
   }
   getInputValues(val) {
     this.textToEdit = val;
+    this.props.getSummary(this.textToEdit);
   }
   async changeToEditMode() {
     this.editMode();
@@ -51,7 +52,9 @@ class Summary extends Component {
   changeToNormalMode() {
     this.editMode();
   }
-
+  componentDidMount() {
+    this.props.getSummary(this.textToEdit);
+  }
   render() {
     return <div className="summary">{this.editOnclick()}</div>;
   }

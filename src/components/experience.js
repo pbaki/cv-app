@@ -106,9 +106,14 @@ class Experience extends Component {
         cards: this.displayData,
         ifCalled: this.state.ifCalled + 1,
       });
+      this.props.getexpCards(this.state.cards);
     }
   }
-
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.cards !== prevState.cards) {
+      this.props.getexpCards(this.state.cards);
+    }
+  }
   render() {
     return (
       <div className="experience">

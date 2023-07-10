@@ -8,6 +8,7 @@ import {
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
 } from "firebase/auth";
+import { getFirestore, doc, setDoc } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDoaIbqf6CJfMH-EMlkwPu1xEQo4-76YdE",
@@ -21,10 +22,42 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
+const firestore = getFirestore(app);
+
+//getting data from components to save on firebase
+const handleAddDocument = async (
+  email,
+  instagram,
+  linkedin,
+  name,
+  phone,
+  skills,
+  summary,
+  eduCards,
+  expCards
+) => {
+  try {
+    const docRef = doc(firestore, "Users", "TYf9bR1qDdqnlQdxmZvm");
+    await setDoc(docRef, {
+      Email: email,
+      Instagram: instagram,
+      Linkedin: linkedin,
+      Name: name,
+      Phone: phone,
+      Skills: skills,
+      Summary: summary,
+      eduCards: eduCards,
+      expCards: expCards,
+    });
+    console.log("Document added, ID:", docRef.id);
+  } catch (error) {
+    console.error("Error adding document:", error);
+  }
+};
 
 export default class AdminLogin extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       mode: 0,
       userName: "",

@@ -102,6 +102,12 @@ class Education extends Component {
         cards: this.displayData,
         ifCalled: this.state.ifCalled + 1,
       });
+      this.props.geteduCards(this.state.cards);
+    }
+  }
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.cards !== prevState.cards) {
+      this.props.geteduCards(this.state.cards);
     }
   }
   render() {
