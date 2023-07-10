@@ -1,5 +1,5 @@
 import React from "react";
-import { Component, useState } from "react";
+import { Component } from "react";
 import { initializeApp } from "firebase/app";
 import {
   getAuth,
@@ -7,7 +7,6 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
-  signInAnonymously,
 } from "firebase/auth";
 
 const firebaseConfig = {
@@ -26,12 +25,27 @@ const googleProvider = new GoogleAuthProvider();
 export default class AdminLogin extends Component {
   constructor() {
     super();
+    this.state = {
+      mode: 0,
+    };
+    this.handleMode = this.handleMode.bind(this);
+  }
+  handleMode() {
+    this.setState({
+      mode: this.state.mode === 0 ? 1 : 0,
+    });
   }
   render() {
     return (
-      <div>
-        <Login />
-      </div>
+      <>
+        {this.state.mode === 0 ? (
+          <Login handleMode={this.handleMode} />
+        ) : (
+          <div className="afterlogin">
+            <button className="logout">Logout</button>
+          </div>
+        )}
+      </>
     );
   }
 }
@@ -67,20 +81,6 @@ class Login extends Component {
       });
   };
 
-  handleLoginAnonymously = () => {
-    signInAnonymously(auth)
-      .then((userCredential) => {
-        // Handle successful anonymous login
-      })
-      .catch((error) => {
-        console.log("Error logging in anonymously:", error);
-      });
-  };
-
-  handleRegister = () => {
-    // Open registration popup with different options
-  };
-
   handleRegisterWithGoogle = () => {
     signInWithPopup(auth, googleProvider)
       .then((result) => {
@@ -99,16 +99,6 @@ class Login extends Component {
       })
       .catch((error) => {
         console.log("Error registering with email and password:", error);
-      });
-  };
-
-  handleRegisterAnonymously = () => {
-    signInAnonymously(auth)
-      .then((userCredential) => {
-        // Handle successful anonymous registration
-      })
-      .catch((error) => {
-        console.log("Error registering anonymously:", error);
       });
   };
 
@@ -139,26 +129,20 @@ class Login extends Component {
           value={password}
           onChange={this.handlePasswordChange}
         />
-        <button onClick={this.handleLogin}>Login</button>
-        <button onClick={this.handleLoginWithGoogle}>Login with Google</button>
-        <button onClick={this.handleLoginAnonymously}>Login Anonymously</button>
-        <button onClick={this.handleRegister}>Register</button>
-        {/* Registration options popup */}
-        {/* You can style the popup with CSS or use a modal library */}
-        {/* For simplicity, I'm using native browser confirm() method */}
-        {
-          <div>
-            <button onClick={this.handleRegisterWithGoogle}>
-              Register with Google
-            </button>
-            <button onClick={this.handleRegisterWithEmailAndPassword}>
-              Register with Email and Password
-            </button>
-            <button onClick={this.handleRegisterAnonymously}>
-              Register Anonymously
-            </button>
-          </div>
-        }
+        <div className="loginButtons">
+          <button onClick={this.handleLogin}>Login</button>
+          <button onClick={this.handleLoginWithGoogle}>
+            Login with Google
+          </button>
+        </div>
+        <div className="registerButtons">
+          <button onClick={this.handleRegisterWithEmailAndPassword}>
+            Register
+          </button>
+          <button onClick={this.handleRegisterWithGoogle}>
+            Register with Google
+          </button>
+        </div>
       </div>
     );
   }
