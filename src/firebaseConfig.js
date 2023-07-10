@@ -27,21 +27,31 @@ export default class AdminLogin extends Component {
     super();
     this.state = {
       mode: 0,
+      userName: "",
     };
     this.handleMode = this.handleMode.bind(this);
+    this.getUserName = this.getUserName.bind(this);
   }
   handleMode() {
     this.setState({
       mode: this.state.mode === 0 ? 1 : 0,
     });
   }
+  getUserName(username) {
+    this.setState({
+      userName: username,
+    });
+  }
   render() {
     return (
       <>
         {this.state.mode === 0 ? (
-          <Login handleMode={this.handleMode} />
+          <Login handleMode={this.handleMode} getUserName={this.getUserName} />
         ) : (
           <div className="afterlogin">
+            {this.state.userName === "" ? null : (
+              <p className="username">Welcome {this.state.userName}!</p>
+            )}
             <button className="logout">Logout</button>
           </div>
         )}
@@ -75,19 +85,11 @@ class Login extends Component {
       .then((result) => {
         // Handle successful login with Google
         console.log(result);
+        this.props.getUserName(result.user.displayName);
+        this.props.handleMode();
       })
       .catch((error) => {
         console.log("Error logging in with Google:", error);
-      });
-  };
-
-  handleRegisterWithGoogle = () => {
-    signInWithPopup(auth, googleProvider)
-      .then((result) => {
-        // Handle successful registration with Google
-      })
-      .catch((error) => {
-        console.log("Error registering with Google:", error);
       });
   };
 
@@ -129,19 +131,26 @@ class Login extends Component {
           value={password}
           onChange={this.handlePasswordChange}
         />
-        <div className="loginButtons">
-          <button onClick={this.handleLogin}>Login</button>
-          <button onClick={this.handleLoginWithGoogle}>
-            Login with Google
-          </button>
-        </div>
-        <div className="registerButtons">
-          <button onClick={this.handleRegisterWithEmailAndPassword}>
-            Register
-          </button>
-          <button onClick={this.handleRegisterWithGoogle}>
-            Register with Google
-          </button>
+        <div className="loginRegisterButtonContainer">
+          <div className="loginregisterButtons">
+            <button className="normalLogin" onClick={this.handleLogin}>
+              Login
+            </button>
+            <button
+              className="normalRegister"
+              onClick={this.handleRegisterWithEmailAndPassword}
+            >
+              Register
+            </button>
+          </div>
+          <div className="googleButton">
+            <button
+              className="googleLogin"
+              onClick={this.handleLoginWithGoogle}
+            >
+              Sign in with Google
+            </button>
+          </div>
         </div>
       </div>
     );
