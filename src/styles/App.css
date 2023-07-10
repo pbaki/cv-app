@@ -71,6 +71,7 @@ form {
   flex-direction: column;
   gap: 5px;
 }
+/* Style for Login/Register */
 .login-form {
   display: flex;
   flex-direction: column;
@@ -83,4 +84,35 @@ form {
 .login-form button {
   max-width: 30%;
   align-self: flex-end;
+}
+.username {
+  color: #e0e0e0;
+  padding-left: 10px;
+  font-size: 2rem;
+  margin: 10px 0;
+}
+.logout {
+  float: right;
+}
+.googleLogin {
+  min-width: 100px;
+  flex-shrink: 0;
+}
+.normalLogin {
+  flex-shrink: 0;
+  min-width: 50px;
+}
+.normalRegister {
+  min-width: 70px;
+  flex-shrink: 0;
+}
+.googleButton {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+.loginRegisterButtonContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
 }
