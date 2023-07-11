@@ -10,6 +10,7 @@ class App extends Component {
   constructor() {
     super();
     this.state = {
+      reRender: 0,
       email: "",
       instagram: "",
       linkedin: "",
@@ -29,6 +30,7 @@ class App extends Component {
     this.getSummary = this.getSummary.bind(this);
     this.geteduCards = this.geteduCards.bind(this);
     this.getexpCards = this.getexpCards.bind(this);
+    this.reRender = this.reRender.bind(this);
   }
   getMail(mail) {
     this.setState({
@@ -75,6 +77,11 @@ class App extends Component {
       expCards: expCards,
     });
   }
+  reRender() {
+    this.setState({
+      reRender: this.state.reRender + 1,
+    });
+  }
 
   render() {
     return (
@@ -101,12 +108,13 @@ class App extends Component {
             email={this.state.email}
             instagram={this.state.instagram}
             linkedin={this.state.linkedin}
+            name={this.state.name}
             phone={this.state.phone}
             skills={this.state.skills}
             summary={this.state.summary}
             eduCards={this.state.eduCards}
             expCards={this.state.expCards}
-            name={this.state.name}
+            reRender={this.reRender}
           />
         </div>
       </>

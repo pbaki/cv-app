@@ -1,14 +1,20 @@
-import React from "react";
-import { Component } from "react";
+import React, { Component } from "react";
 import { initializeApp } from "firebase/app";
 import {
   getAuth,
+  onAuthStateChanged,
   signInWithEmailAndPassword,
   signInWithPopup,
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
 } from "firebase/auth";
-import { getFirestore, doc, setDoc } from "firebase/firestore";
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  getDoc,
+  updateDoc,
+} from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDoaIbqf6CJfMH-EMlkwPu1xEQo4-76YdE",
@@ -24,37 +30,6 @@ const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 const firestore = getFirestore(app);
 
-//getting data from components to save on firebase
-const handleAddDocument = async (
-  email,
-  instagram,
-  linkedin,
-  name,
-  phone,
-  skills,
-  summary,
-  eduCards,
-  expCards
-) => {
-  try {
-    const docRef = doc(firestore, "Users", "TYf9bR1qDdqnlQdxmZvm");
-    await setDoc(docRef, {
-      Email: email,
-      Instagram: instagram,
-      Linkedin: linkedin,
-      Name: name,
-      Phone: phone,
-      Skills: skills,
-      Summary: summary,
-      eduCards: eduCards,
-      expCards: expCards,
-    });
-    console.log("Document added, ID:", docRef.id);
-  } catch (error) {
-    console.error("Error adding document:", error);
-  }
-};
-
 export default class AdminLogin extends Component {
   constructor(props) {
     super(props);
@@ -65,16 +40,85 @@ export default class AdminLogin extends Component {
     this.handleMode = this.handleMode.bind(this);
     this.getUserName = this.getUserName.bind(this);
   }
-  handleMode() {
-    this.setState({
-      mode: this.state.mode === 0 ? 1 : 0,
+
+  componentDidMount() {
+    // Check if user is already logged in
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        this.getUserName(user.displayName);
+        this.handleMode();
+      }
     });
   }
+
+  handleMode() {
+    this.setState((prevState) => ({
+      mode: prevState.mode === 0 ? 1 : 0,
+    }));
+  }
+
   getUserName(username) {
     this.setState({
       userName: username,
     });
   }
+
+  handleLogout = () => {
+    auth.signOut().then(() => {
+      this.setState({
+        mode: 0,
+        userName: "",
+      });
+      this.props.reRender();
+    });
+  };
+
+  async handleAddDocument(
+    email,
+    instagram,
+    linkedin,
+    name,
+    phone,
+    skills,
+    summary,
+    eduCards,
+    expCards
+  ) {
+    try {
+      const docRef = doc(firestore, "Users", "TYf9bR1qDdqnlQdxmZvm");
+      await setDoc(docRef, {
+        Email: email,
+        Instagram: instagram,
+        Linkedin: linkedin,
+        Name: name,
+        Phone: phone,
+        Skills: skills,
+        Summary: summary,
+        eduCards: eduCards,
+        expCards: expCards,
+      });
+      console.log("Document added, ID:", docRef.id);
+    } catch (error) {
+      console.error("Error adding document:", error);
+    }
+  }
+
+  componentDidUpdate() {
+    if (this.state.mode === 1) {
+      this.handleAddDocument(
+        this.props.email,
+        this.props.instagram,
+        this.props.linkedin,
+        this.props.name,
+        this.props.phone,
+        this.props.skills,
+        this.props.summary,
+        this.props.eduCards,
+        this.props.expCards
+      );
+    }
+  }
+
   render() {
     return (
       <>
@@ -85,7 +129,9 @@ export default class AdminLogin extends Component {
             {this.state.userName === "" ? null : (
               <p className="username">Welcome {this.state.userName}!</p>
             )}
-            <button className="logout">Logout</button>
+            <button className="logout" onClick={this.handleLogout}>
+              Logout
+            </button>
           </div>
         )}
       </>
@@ -106,7 +152,11 @@ class Login extends Component {
     const { email, password } = this.state;
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        // Handle successful login
+        const user = userCredential.user;
+        const email = user.email;
+        const mailPart = email.match(/^(.+)@/)[1];
+        this.props.getUserName(mailPart);
+        this.props.handleMode();
       })
       .catch((error) => {
         console.log("Error login:", error);
@@ -116,9 +166,8 @@ class Login extends Component {
   handleLoginWithGoogle = () => {
     signInWithPopup(auth, googleProvider)
       .then((result) => {
-        // Handle successful login with Google
-        console.log(result);
-        this.props.getUserName(result.user.displayName);
+        const user = result.user;
+        this.props.getUserName(user.displayName);
         this.props.handleMode();
       })
       .catch((error) => {
@@ -130,7 +179,9 @@ class Login extends Component {
     const { email, password } = this.state;
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        // Handle successful registration with email and password
+        const user = userCredential.user;
+        this.props.getUserName(user.email);
+        this.props.handleMode();
       })
       .catch((error) => {
         console.log("Error registering with email and password:", error);
