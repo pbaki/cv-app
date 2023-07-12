@@ -44,6 +44,7 @@ class Name extends Component {
           defaultName={this.state.name}
           getValue={this.onNameChange}
           editMode={this.editMode}
+          getName={this.props.getName}
         />
       );
     }
@@ -108,6 +109,7 @@ class NameForm extends Component {
                     : this.state.onNameChange
                 );
                 this.props.editMode();
+                this.props.getName(this.state.onNameChange);
               }}
             >
               Submit

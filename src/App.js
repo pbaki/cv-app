@@ -82,7 +82,6 @@ class App extends Component {
       reRender: this.state.reRender + 1,
     });
   }
-
   render() {
     return (
       <>
@@ -95,12 +94,27 @@ class App extends Component {
               getInstagram={this.getInstagram}
               getLinkedin={this.getLinkedin}
               getSkills={this.getSkills}
+              email={this.state.email}
+              name={this.state.name}
+              phone={this.state.phone}
+              instagram={this.state.instagram}
+              linkedin={this.state.linkedin}
+              skills={this.state.skills}
             />
           </div>
           <div className="rightContainer">
-            <Summary getSummary={this.getSummary} />
-            <Education geteduCards={this.geteduCards} />
-            <Experience getexpCards={this.getexpCards} />
+            <Summary
+              getSummary={this.getSummary}
+              summary={this.state.summary}
+            />
+            <Education
+              geteduCards={this.geteduCards}
+              eduCards={this.state.eduCards}
+            />
+            <Experience
+              getexpCards={this.getexpCards}
+              expCards={this.state.expCards}
+            />
           </div>
         </div>
         <div className="login">
@@ -115,6 +129,15 @@ class App extends Component {
             eduCards={this.state.eduCards}
             expCards={this.state.expCards}
             reRender={this.reRender}
+            getName={this.getName}
+            getPhone={this.getPhone}
+            getMail={this.getMail}
+            getInstagram={this.getInstagram}
+            getLinkedin={this.getLinkedin}
+            getSkills={this.getSkills}
+            getSummary={this.getSummary}
+            geteduCards={this.geteduCards}
+            getexpCards={this.getexpCards}
           />
         </div>
       </>

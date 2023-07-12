@@ -8,13 +8,7 @@ import {
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
 } from "firebase/auth";
-import {
-  getFirestore,
-  doc,
-  setDoc,
-  getDoc,
-  updateDoc,
-} from "firebase/firestore";
+import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDoaIbqf6CJfMH-EMlkwPu1xEQo4-76YdE",
@@ -36,9 +30,19 @@ export default class AdminLogin extends Component {
     this.state = {
       mode: 0,
       userName: "",
+      email: props.email,
+      giveInstagram: props.instagram,
+      giveLinkedin: props.linkedin,
+      giveName: props.name,
+      givePhone: props.phone,
+      giveSkills: props.skills,
+      giveSummary: props.summary,
+      giveEduCards: props.eduCards,
+      giveExpCards: props.expCards,
     };
     this.handleMode = this.handleMode.bind(this);
     this.getUserName = this.getUserName.bind(this);
+    this.getDataToRenderAfterLogin = this.getDataToRenderAfterLogin.bind(this);
   }
 
   componentDidMount() {
@@ -72,6 +76,40 @@ export default class AdminLogin extends Component {
       this.props.reRender();
     });
   };
+  ConvertDataForFirebase(skills, eduCards, expCards) {
+    const skillsArray = [];
+    for (let skill of skills) {
+      skillsArray.push({
+        skillName: skill.props.skillName,
+      });
+    }
+
+    const eduCardsArray = [];
+    for (let card of eduCards) {
+      eduCardsArray.push({
+        key: card.key,
+        description: card.props.description,
+        educationTime: card.props.educationTime,
+        schoolName: card.props.schoolName,
+      });
+    }
+
+    const expCardsArray = [];
+    for (let card of expCards) {
+      expCardsArray.push({
+        key: card.key,
+        companyDescription: card.props.companyDescription,
+        companyName: card.props.companyName,
+        companyPosition: card.props.companyPosition,
+        experienceTime: card.props.experienceTime,
+      });
+    }
+    this.setState({
+      giveSkills: skillsArray,
+      giveEduCards: eduCardsArray,
+      giveExpCards: expCardsArray,
+    });
+  }
 
   async handleAddDocument(
     email,
@@ -84,6 +122,7 @@ export default class AdminLogin extends Component {
     eduCards,
     expCards
   ) {
+    this.ConvertDataForFirebase(skills, eduCards, expCards);
     try {
       const docRef = doc(firestore, "Users", "TYf9bR1qDdqnlQdxmZvm");
       await setDoc(docRef, {
@@ -92,8 +131,8 @@ export default class AdminLogin extends Component {
         Linkedin: linkedin,
         Name: name,
         Phone: phone,
-        Skills: skills,
         Summary: summary,
+        Skills: skills,
         eduCards: eduCards,
         expCards: expCards,
       });
@@ -103,27 +142,81 @@ export default class AdminLogin extends Component {
     }
   }
 
-  componentDidUpdate() {
-    if (this.state.mode === 1) {
-      this.handleAddDocument(
-        this.props.email,
-        this.props.instagram,
-        this.props.linkedin,
-        this.props.name,
-        this.props.phone,
-        this.props.skills,
-        this.props.summary,
-        this.props.eduCards,
-        this.props.expCards
+  async getDataToRenderAfterLogin() {
+    try {
+      const docRef = doc(firestore, "Users", "TYf9bR1qDdqnlQdxmZvm");
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        console.log("Retrieved data:", data);
+        this.props.getMail(data.Email);
+        this.props.getInstagram(data.Instagram);
+        this.props.getLinkedin(data.Linkedin);
+        this.props.getName(data.Name);
+        this.props.getPhone(data.Phone);
+        this.props.getSummary(data.Summary);
+        this.props.getSkills(data.Skills);
+        this.props.geteduCards(data.eduCards);
+        this.props.getexpCards(data.expCards);
+
+        return data;
+      } else {
+        console.log("Document not found");
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  }
+  componentDidUpdate(prevProps, prevState) {
+    if (
+      this.state.mode === 1 &&
+      (this.props.eduCards !== prevProps.eduCards ||
+        this.props.expCards !== prevProps.expCards ||
+        this.props.instagram !== prevProps.instagram ||
+        this.props.linkedin !== prevProps.linkedin ||
+        this.props.name !== prevProps.name ||
+        this.props.phone !== prevProps.phone ||
+        this.props.skills !== prevProps.skills ||
+        this.props.summary !== prevProps.summary ||
+        this.props.email !== prevProps.email)
+    ) {
+      this.setState(
+        {
+          email: this.props.email,
+          giveInstagram: this.props.instagram,
+          giveLinkedin: this.props.linkedin,
+          giveName: this.props.name,
+          givePhone: this.props.phone,
+          giveSkills: this.props.skills,
+          giveSummary: this.props.summary,
+          giveEduCards: this.props.eduCards,
+          giveExpCards: this.props.expCards,
+        },
+        () => {
+          this.handleAddDocument(
+            this.state.email,
+            this.state.giveInstagram,
+            this.state.giveLinkedin,
+            this.state.giveName,
+            this.state.givePhone,
+            this.state.giveSkills,
+            this.state.giveSummary,
+            this.state.giveEduCards,
+            this.state.giveExpCards
+          );
+        }
       );
     }
   }
-
   render() {
     return (
       <>
         {this.state.mode === 0 ? (
-          <Login handleMode={this.handleMode} getUserName={this.getUserName} />
+          <Login
+            handleMode={this.handleMode}
+            getUserName={this.getUserName}
+            getDataToRenderAfterLogin={this.getDataToRenderAfterLogin}
+          />
         ) : (
           <div className="afterlogin">
             {this.state.userName === "" ? null : (
@@ -157,6 +250,7 @@ class Login extends Component {
         const mailPart = email.match(/^(.+)@/)[1];
         this.props.getUserName(mailPart);
         this.props.handleMode();
+        this.props.getDataToRenderAfterLogin();
       })
       .catch((error) => {
         console.log("Error login:", error);
@@ -169,6 +263,7 @@ class Login extends Component {
         const user = result.user;
         this.props.getUserName(user.displayName);
         this.props.handleMode();
+        this.props.getDataToRenderAfterLogin();
       })
       .catch((error) => {
         console.log("Error logging in with Google:", error);
