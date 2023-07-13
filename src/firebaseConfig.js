@@ -77,38 +77,40 @@ export default class AdminLogin extends Component {
     });
   };
   ConvertDataForFirebase(skills, eduCards, expCards) {
+    console.log(skills);
     const skillsArray = [];
-    for (let skill of skills) {
-      skillsArray.push({
-        skillName: skill.props.skillName,
-      });
+    if (skills !== []) {
+      for (let skill of skills) {
+        skillsArray.push({
+          skillName: skill.props.skillName,
+        });
+      }
     }
-
     const eduCardsArray = [];
-    for (let card of eduCards) {
-      eduCardsArray.push({
-        key: card.key,
-        description: card.props.description,
-        educationTime: card.props.educationTime,
-        schoolName: card.props.schoolName,
-      });
+    if (eduCards !== []) {
+      for (let card of eduCards) {
+        eduCardsArray.push({
+          key: card.key,
+          description: card.props.description,
+          educationTime: card.props.educationTime,
+          schoolName: card.props.schoolName,
+        });
+      }
     }
 
     const expCardsArray = [];
-    for (let card of expCards) {
-      expCardsArray.push({
-        key: card.key,
-        companyDescription: card.props.companyDescription,
-        companyName: card.props.companyName,
-        companyPosition: card.props.companyPosition,
-        experienceTime: card.props.experienceTime,
-      });
+    if (expCards !== []) {
+      for (let card of expCards) {
+        expCardsArray.push({
+          key: card.key,
+          companyDescription: card.props.companyDescription,
+          companyName: card.props.companyName,
+          companyPosition: card.props.companyPosition,
+          experienceTime: card.props.experienceTime,
+        });
+      }
     }
-    this.setState({
-      giveSkills: skillsArray,
-      giveEduCards: eduCardsArray,
-      giveExpCards: expCardsArray,
-    });
+    return { skillsArray, eduCardsArray, expCardsArray };
   }
 
   async handleAddDocument(
@@ -122,7 +124,9 @@ export default class AdminLogin extends Component {
     eduCards,
     expCards
   ) {
-    this.ConvertDataForFirebase(skills, eduCards, expCards);
+    const { skillsArray, eduCardsArray, expCardsArray } =
+      this.ConvertDataForFirebase(skills, eduCards, expCards);
+    console.log(skillsArray);
     try {
       const docRef = doc(firestore, "Users", "TYf9bR1qDdqnlQdxmZvm");
       await setDoc(docRef, {
@@ -132,9 +136,9 @@ export default class AdminLogin extends Component {
         Name: name,
         Phone: phone,
         Summary: summary,
-        Skills: skills,
-        eduCards: eduCards,
-        expCards: expCards,
+        Skills: skillsArray,
+        eduCards: eduCardsArray,
+        expCards: expCardsArray,
       });
       console.log("Document added, ID:", docRef.id);
     } catch (error) {

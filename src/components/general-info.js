@@ -9,13 +9,20 @@ class GeneralInfo extends Component {
   render() {
     return (
       <>
-        <Name getName={this.props.getName} />
-        <Contact getPhone={this.props.getPhone} getMail={this.props.getMail} />
+        <Name getName={this.props.getName} name={this.props.name} />
+        <Contact
+          phone={this.props.phone}
+          email={this.props.email}
+          getPhone={this.props.getPhone}
+          getMail={this.props.getMail}
+        />
         <Social
           getInstagram={this.props.getInstagram}
           getLinkedin={this.props.getLinkedin}
+          instagram={this.props.instagram}
+          linkedin={this.props.linkedin}
         />
-        <Skills getSkills={this.props.getSkills} />
+        <Skills skills={this.props.skills} getSkills={this.props.getSkills} />
       </>
     );
   }
@@ -24,6 +31,7 @@ class Name extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      shouldGetData: true,
       mode: 1,
       name: "Name here",
     };
@@ -61,6 +69,12 @@ class Name extends Component {
   componentDidUpdate(prevProps, prevState) {
     if (this.state.name !== prevState.name) {
       this.props.getName(this.state.name);
+    }
+    if (this.state.shouldGetData && this.state.name !== this.props.name) {
+      this.setState({
+        name: this.props.name,
+        shouldGetData: false,
+      });
     }
   }
   render() {
@@ -125,6 +139,7 @@ class Contact extends Component {
   constructor(props) {
     super();
     this.state = {
+      shouldGetData: true,
       mode: 1,
       phone: "123456789",
       email: "asd@qwe",
@@ -173,6 +188,17 @@ class Contact extends Component {
     }
     if (this.state.email !== prevState.email) {
       this.props.getMail(this.state.email);
+    }
+    if (
+      this.state.shouldGetData &&
+      (this.state.phone !== this.props.phone ||
+        this.state.email !== this.props.email)
+    ) {
+      this.setState({
+        phone: this.props.phone,
+        email: this.props.email,
+        shouldGetData: false,
+      });
     }
   }
   render() {
@@ -269,6 +295,7 @@ class Social extends Component {
   constructor(props) {
     super();
     this.state = {
+      shouldGetData: true,
       mode: 1,
       Instagram: "Your Instagram",
       Linkedin: "Your Linkedin",
@@ -317,6 +344,17 @@ class Social extends Component {
     }
     if (this.state.Linkedin !== prevState.Linkedin) {
       this.props.getLinkedin(this.state.Linkedin);
+    }
+    if (
+      this.state.shouldGetData &&
+      (this.state.Instagram !== this.props.instagram ||
+        this.state.Linkedin !== this.props.linkedin)
+    ) {
+      this.setState({
+        Instagram: this.props.instagram,
+        Linkedin: this.props.linkedin,
+        shouldGetData: false,
+      });
     }
   }
   render() {
@@ -414,8 +452,12 @@ class Skills extends Component {
     super();
     this.tempArray = [];
     this.state = {
+      shouldGetData: true,
       mode: 1,
-      skillsList: [],
+      skillsList: [
+        <SkillListElement skillName="Skill 1" />,
+        <SkillListElement skillName="Skill 2" />,
+      ],
       ifCalled: 0,
     };
     this.editMode = this.editMode.bind(this);
@@ -472,23 +514,26 @@ class Skills extends Component {
     });
   }
   componentDidMount() {
-    if (this.state.skillsList.length === 0 && this.state.ifCalled === 0) {
-      this.setState({
-        skillsList: [
-          ...this.state.skillsList,
-          <SkillListElement skillName="Skill 1" />,
-          <SkillListElement skillName="Skill 2" />,
-        ],
-        ifCalled: this.state.ifCalled + 1,
-      });
-      this.props.getSkills(this.state.skillsList);
-    }
+    this.props.getSkills(this.state.skillsList);
   }
   componentDidUpdate(prevProps, prevState) {
     if (this.state.skillsList !== prevState.skillsList) {
       this.props.getSkills(this.state.skillsList);
     }
+    if (
+      this.state.shouldGetData &&
+      this.state.skillsList !== this.props.skills &&
+      this.state.skills !== [] &&
+      this.state.skills !== undefined
+    ) {
+      console.log(this.state.skills);
+      this.setState({
+        skillsList: [this.props.skills],
+        shouldGetData: false,
+      });
+    }
   }
+
   render() {
     return (
       <div className="skills">
