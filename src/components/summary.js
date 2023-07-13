@@ -6,6 +6,9 @@ class Summary extends Component {
     super();
     this.textToEdit = "";
     this.state = {
+      summary:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+      shouldGetData: true,
       mode: 1,
     };
     this.editMode = this.editMode.bind(this);
@@ -45,6 +48,9 @@ class Summary extends Component {
   }
   getInputValues(val) {
     this.textToEdit = val;
+    this.setState({
+      summary: val,
+    });
     this.props.getSummary(this.textToEdit);
   }
   async changeToEditMode() {
@@ -55,6 +61,19 @@ class Summary extends Component {
   }
   componentDidMount() {
     this.props.getSummary(this.textToEdit);
+  }
+  componentDidUpdate(prevProps, prevState) {
+    if (this.textToEdit !== this.props.summary) {
+      this.props.getSummary(this.textToEdit);
+    }
+    if (this.state.shouldGetData && this.textToEdit !== this.props.summary) {
+      console.log("asd");
+      this.textToEdit = this.props.summary;
+      this.setState({
+        summary: this.textToEdit,
+        shouldGetData: false,
+      });
+    }
   }
   render() {
     return <div className="summary">{this.editOnclick()}</div>;
