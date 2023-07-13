@@ -152,35 +152,17 @@ class Contact extends Component {
       mode: this.state.mode === 1 ? 2 : 1,
     });
   }
-  ifMode1() {
-    if (this.state.mode === 1) {
-      return [
-        <p key="phone">Phone: {this.state.phone}</p>,
-        <p key="email">Email: {this.state.email}</p>,
-      ];
-    }
-  }
   getValues(phoneValue, mailValue) {
-    this.setState({
-      phone: phoneValue,
-      email: mailValue,
-    });
-  }
-  ifMode2() {
-    if (this.state.mode === 2) {
-      return (
-        <ContactForm
-          phoneDefaultValue={this.state.phone}
-          emailDefaultValue={this.state.email}
-          getValues={this.getValues}
-          editMode={this.editMode}
-        />
-      );
-    }
-  }
-  componentDidMount() {
-    this.props.getPhone(this.state.phone);
-    this.props.getMail(this.state.email);
+    this.setState(
+      {
+        phone: phoneValue,
+        email: mailValue,
+      },
+      () => {
+        this.props.getPhone(this.state.phone);
+        this.props.getMail(this.state.email);
+      }
+    );
   }
   componentDidUpdate(prevProps, prevState) {
     if (this.state.phone !== prevState.phone) {
@@ -192,8 +174,10 @@ class Contact extends Component {
     if (
       this.state.shouldGetData &&
       (this.state.phone !== this.props.phone ||
-        this.state.email !== this.props.email)
+        this.state.email !== this.props.email) &&
+      (this.props.email !== "" || this.props.phone !== "")
     ) {
+      console.log("asd");
       this.setState({
         phone: this.props.phone,
         email: this.props.email,
@@ -215,31 +199,54 @@ class Contact extends Component {
             Edit
           </button>
         </div>
-        {this.ifMode1()}
-        {this.ifMode2()}
+        {this.state.mode === 1 ? (
+          <>
+            <p key="phone">Phone: {this.state.phone}</p>
+            <p key="email">Email: {this.state.email}</p>
+          </>
+        ) : null}
+        {this.state.mode === 2 ? (
+          <ContactForm
+            phoneDefaultValue={this.state.phone}
+            emailDefaultValue={this.state.email}
+            getValues={this.getValues}
+            editMode={this.editMode}
+          />
+        ) : null}
       </div>
     );
   }
 }
-class ContactForm extends Component {
+class ContactForm extends React.Component {
   constructor(props) {
-    super();
+    super(props);
     this.state = {
-      phoneValue: "",
-      emailValue: "",
+      phoneValue: props.phoneDefaultValue,
+      emailValue: props.emailDefaultValue,
     };
     this.phoneValueHandler = this.phoneValueHandler.bind(this);
     this.emailValueHandler = this.emailValueHandler.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
+
   phoneValueHandler(event) {
     this.setState({
       phoneValue: event.target.value,
     });
   }
+
   emailValueHandler(event) {
     this.setState({
       emailValue: event.target.value,
     });
+  }
+
+  handleSubmit(event) {
+    event.preventDefault();
+    const phoneValue = this.state.phoneValue || this.props.phoneDefaultValue;
+    const emailValue = this.state.emailValue || this.props.emailDefaultValue;
+    this.props.getValues(phoneValue, emailValue);
+    this.props.editMode();
   }
 
   render() {
@@ -252,7 +259,7 @@ class ContactForm extends Component {
               type="text"
               id="phoneForm"
               name="phoneForm"
-              defaultValue={this.props.phoneDefaultValue}
+              value={this.state.phoneValue}
               onChange={this.phoneValueHandler}
             ></input>
           </div>
@@ -262,26 +269,12 @@ class ContactForm extends Component {
               type="text"
               id="emailForm"
               name="emailForm"
-              defaultValue={this.props.emailDefaultValue}
+              value={this.state.emailValue}
               onChange={this.emailValueHandler}
             ></input>
           </div>
           <div className="contactButtons">
-            <button
-              type="submit"
-              onClick={(e) => {
-                e.preventDefault();
-                this.props.getValues(
-                  this.state.phoneValue === ""
-                    ? this.props.phoneDefaultValue
-                    : this.state.phoneValue,
-                  this.state.emailValue === ""
-                    ? this.props.emailDefaultValue
-                    : this.state.emailValue
-                );
-                this.props.editMode();
-              }}
-            >
+            <button type="submit" onClick={this.handleSubmit}>
               Submit
             </button>
             <button onClick={this.props.editMode}>Cancel</button>
@@ -291,6 +284,7 @@ class ContactForm extends Component {
     );
   }
 }
+
 class Social extends Component {
   constructor(props) {
     super();
@@ -317,10 +311,16 @@ class Social extends Component {
     }
   }
   getValues(instagramValue, linkedinValue) {
-    this.setState({
-      Instagram: instagramValue,
-      Linkedin: linkedinValue,
-    });
+    this.setState(
+      {
+        Instagram: instagramValue,
+        Linkedin: linkedinValue,
+      },
+      () => {
+        this.props.getInstagram(this.state.Instagram);
+        this.props.getLinkedin(this.state.Linkedin);
+      }
+    );
   }
   ifMode2() {
     if (this.state.mode === 2) {
@@ -334,10 +334,6 @@ class Social extends Component {
       );
     }
   }
-  componentDidMount() {
-    this.props.getInstagram(this.state.Instagram);
-    this.props.getLinkedin(this.state.Linkedin);
-  }
   componentDidUpdate(prevProps, prevState) {
     if (this.state.Instagram !== prevState.Instagram) {
       this.props.getInstagram(this.state.Instagram);
@@ -348,7 +344,8 @@ class Social extends Component {
     if (
       this.state.shouldGetData &&
       (this.state.Instagram !== this.props.instagram ||
-        this.state.Linkedin !== this.props.linkedin)
+        this.state.Linkedin !== this.props.linkedin) &&
+      (this.props.linkedin !== "" || this.props.instagram !== "")
     ) {
       this.setState({
         Instagram: this.props.instagram,
@@ -361,7 +358,7 @@ class Social extends Component {
     return (
       <div className="Social" key={this.props.key}>
         <div className="socialContainer">
-          <h2>Contact Info</h2>
+          <h2>Social</h2>
           <button
             className="editButton"
             onClick={() => {
@@ -480,39 +477,42 @@ class Skills extends Component {
     });
   }
   skillWithDel() {
-    this.state.skillsList.forEach((ele, index) => {
+    const updatedSkillsList = this.state.skillsList.map((ele, index) => {
       if (this.state.mode === 2) {
-        let deleteButton2 = (
-          <>
-            <button
-              onClick={() => {
-                this.tempArray.splice(index, 1);
-                this.setState({
-                  skillsList: this.tempArray,
-                });
-                this.skillWithDel();
-              }}
-            >
-              Del
-            </button>
-          </>
-        );
-        this.tempArray[index] = (
+        return (
           <SkillListElement
+            key={index}
             skillName={ele.props.skillName}
-            deleteButton={deleteButton2}
+            deleteButton={
+              <button
+                onClick={() => {
+                  this.setState(
+                    (prevState) => ({
+                      skillsList: prevState.skillsList.filter(
+                        (skill, i) => i !== index
+                      ),
+                    }),
+                    () => {
+                      this.skillWithDel();
+                    }
+                  );
+                }}
+              >
+                Del
+              </button>
+            }
           />
         );
       } else {
-        this.tempArray[index] = (
-          <SkillListElement skillName={ele.props.skillName} />
-        );
+        return <SkillListElement key={index} skillName={ele.props.skillName} />;
       }
     });
+
     this.setState({
-      skillsList: this.tempArray,
+      skillsList: updatedSkillsList,
     });
   }
+
   componentDidMount() {
     this.props.getSkills(this.state.skillsList);
   }
@@ -523,12 +523,17 @@ class Skills extends Component {
     if (
       this.state.shouldGetData &&
       this.state.skillsList !== this.props.skills &&
-      this.state.skills !== [] &&
-      this.state.skills !== undefined
+      this.props.skills.length !== 0 &&
+      this.state.mode === 1
     ) {
-      console.log(this.state.skills);
+      const makeComponentFromProps = [];
+      for (let skill of this.props.skills) {
+        makeComponentFromProps.push(
+          <SkillListElement skillName={skill.skillName} />
+        );
+      }
       this.setState({
-        skillsList: [this.props.skills],
+        skillsList: makeComponentFromProps,
         shouldGetData: false,
       });
     }

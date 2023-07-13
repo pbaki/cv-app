@@ -10,6 +10,7 @@ class App extends Component {
   constructor() {
     super();
     this.state = {
+      mode: 0,
       reRender: 0,
       email: "",
       instagram: "",
@@ -57,9 +58,10 @@ class App extends Component {
       phone: phone,
     });
   }
-  getSkills(skills) {
+  getSkills(skills, mode) {
     this.setState({
       skills: skills,
+      mode: mode,
     });
   }
   getSummary(summary) {
@@ -100,6 +102,7 @@ class App extends Component {
               instagram={this.state.instagram}
               linkedin={this.state.linkedin}
               skills={this.state.skills}
+              isLogged={this.state.mode}
             />
           </div>
           <div className="rightContainer">

@@ -28,6 +28,7 @@ export default class AdminLogin extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      counter: 0,
       mode: 0,
       userName: "",
       email: props.email,
@@ -73,21 +74,30 @@ export default class AdminLogin extends Component {
         mode: 0,
         userName: "",
       });
-      this.props.reRender();
+      window.location.reload();
     });
   };
   ConvertDataForFirebase(skills, eduCards, expCards) {
-    console.log(skills);
     const skillsArray = [];
-    if (skills !== []) {
+    if (
+      skills.length !== 0 &&
+      skills[0].props &&
+      skills[0].props.skillName !== undefined
+    ) {
       for (let skill of skills) {
-        skillsArray.push({
-          skillName: skill.props.skillName,
-        });
+        if (skill.props && skill.props.skillName !== undefined) {
+          skillsArray.push({
+            skillName: skill.props.skillName,
+          });
+        }
       }
     }
     const eduCardsArray = [];
-    if (eduCards !== []) {
+    if (
+      eduCards.length !== 0 &&
+      eduCards[0].props &&
+      eduCards[0].props.description !== undefined
+    ) {
       for (let card of eduCards) {
         eduCardsArray.push({
           key: card.key,
@@ -99,7 +109,11 @@ export default class AdminLogin extends Component {
     }
 
     const expCardsArray = [];
-    if (expCards !== []) {
+    if (
+      expCards.length !== 0 &&
+      expCards[0].props &&
+      expCards[0].props.companyDescription !== undefined
+    ) {
       for (let card of expCards) {
         expCardsArray.push({
           key: card.key,
@@ -126,7 +140,7 @@ export default class AdminLogin extends Component {
   ) {
     const { skillsArray, eduCardsArray, expCardsArray } =
       this.ConvertDataForFirebase(skills, eduCards, expCards);
-    console.log(skillsArray);
+
     try {
       const docRef = doc(firestore, "Users", "TYf9bR1qDdqnlQdxmZvm");
       await setDoc(docRef, {
@@ -159,7 +173,7 @@ export default class AdminLogin extends Component {
         this.props.getName(data.Name);
         this.props.getPhone(data.Phone);
         this.props.getSummary(data.Summary);
-        this.props.getSkills(data.Skills);
+        this.props.getSkills(data.Skills, this.state.mode);
         this.props.geteduCards(data.eduCards);
         this.props.getexpCards(data.expCards);
 
@@ -186,28 +200,37 @@ export default class AdminLogin extends Component {
     ) {
       this.setState(
         {
-          email: this.props.email,
-          giveInstagram: this.props.instagram,
-          giveLinkedin: this.props.linkedin,
-          giveName: this.props.name,
-          givePhone: this.props.phone,
-          giveSkills: this.props.skills,
-          giveSummary: this.props.summary,
-          giveEduCards: this.props.eduCards,
-          giveExpCards: this.props.expCards,
+          counter: this.state.counter + 1,
         },
         () => {
-          this.handleAddDocument(
-            this.state.email,
-            this.state.giveInstagram,
-            this.state.giveLinkedin,
-            this.state.giveName,
-            this.state.givePhone,
-            this.state.giveSkills,
-            this.state.giveSummary,
-            this.state.giveEduCards,
-            this.state.giveExpCards
-          );
+          if (this.state.counter > 1) {
+            this.setState(
+              {
+                email: this.props.email,
+                giveInstagram: this.props.instagram,
+                giveLinkedin: this.props.linkedin,
+                giveName: this.props.name,
+                givePhone: this.props.phone,
+                giveSkills: this.props.skills,
+                giveSummary: this.props.summary,
+                giveEduCards: this.props.eduCards,
+                giveExpCards: this.props.expCards,
+              },
+              () => {
+                this.handleAddDocument(
+                  this.state.email,
+                  this.state.giveInstagram,
+                  this.state.giveLinkedin,
+                  this.state.giveName,
+                  this.state.givePhone,
+                  this.state.giveSkills,
+                  this.state.giveSummary,
+                  this.state.giveEduCards,
+                  this.state.giveExpCards
+                );
+              }
+            );
+          }
         }
       );
     }
