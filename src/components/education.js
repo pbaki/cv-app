@@ -5,32 +5,53 @@ import "../styles/education.css";
 class Education extends Component {
   constructor(props) {
     super();
-    this.displayData = [];
-    this.tempDisplayData = [];
+    this.displayData = [
+      <EducationCard
+        key={uuid()}
+        educationTime={"1800 - 1900"}
+        schoolName={"Some Name"}
+        description={
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+        }
+      />,
+      <EducationCard
+        key={uuid()}
+        educationTime={"1900 - 1920"}
+        schoolName={"Some Name"}
+        description={
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+        }
+      />,
+    ];
     this.inputStartYear = "";
     this.inputEndYear = "";
     this.inputSchoolName = "";
     this.inputDescription = "";
     this.state = {
+      shouldGetData: true,
+      counter: 0,
       mode: 1,
-      cards: [],
-      ifCalled: 0,
+      cards: this.displayData,
     };
     this.editMode.bind(this);
     this.getInputValues.bind(this);
     this.addCards.bind(this);
+    this.addDeleteCard.bind(this);
   }
+
   editMode() {
-    this.setState({
-      mode: this.state.mode === 1 ? 2 : 1,
-    });
+    this.setState((prevState) => ({
+      mode: prevState.mode === 1 ? 2 : 1,
+    }));
   }
+
   getInputValues(val1, val2, val3, val4) {
     this.inputStartYear = val1;
     this.inputEndYear = val2;
     this.inputSchoolName = val3;
     this.inputDescription = val4;
   }
+
   addCards() {
     if (
       this.inputStartYear !== "" ||
@@ -38,7 +59,7 @@ class Education extends Component {
       this.inputSchoolName !== "" ||
       this.inputDescription !== ""
     ) {
-      this.displayData.push(
+      const newCard = (
         <EducationCard
           key={uuid()}
           educationTime={this.inputStartYear + " - " + this.inputEndYear}
@@ -46,20 +67,26 @@ class Education extends Component {
           description={this.inputDescription}
         />
       );
+
+      this.displayData.push(newCard);
+
+      this.setState({
+        cards: this.displayData,
+      });
     }
-    this.setState({
-      cards: this.displayData,
-    });
   }
+
   addDeleteCard() {
-    this.displayData.forEach((val, index) => {
+    if (this.state.cards.length !== 0) {
+      this.displayData = this.state.cards;
+    }
+    const updatedData = this.displayData.map((val, index) => {
       let deleteButton2 = (
         <button
           onClick={() => {
             this.displayData.splice(index, 1);
-            this.tempDisplayData.splice(index, 1);
             this.setState({
-              cards: this.tempDisplayData,
+              cards: this.displayData,
             });
             this.addDeleteCard();
           }}
@@ -67,49 +94,48 @@ class Education extends Component {
           Del
         </button>
       );
-
-      const ClonedElementWithMoreProps = React.cloneElement(val, {
+      return React.cloneElement(val, {
         deleteButton: deleteButton2,
       });
-      this.tempDisplayData[index] = ClonedElementWithMoreProps;
     });
 
+    this.displayData = updatedData;
+
     this.setState({
-      cards: this.tempDisplayData,
+      cards: this.displayData,
     });
   }
-  componentDidMount() {
-    if (this.state.cards.length === 0 && this.state.ifCalled === 0) {
-      this.displayData = [
-        <EducationCard
-          key={uuid()}
-          educationTime={"1800 - 1900"}
-          schoolName={"Some Name"}
-          description={
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-          }
-        />,
-        <EducationCard
-          key={uuid()}
-          educationTime={"1900 - 1920"}
-          schoolName={"Some Name"}
-          description={
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-          }
-        />,
-      ];
-      this.setState({
-        cards: this.displayData,
-        ifCalled: this.state.ifCalled + 1,
-      });
-      this.props.geteduCards(this.state.cards);
-    }
-  }
+
   componentDidUpdate(prevProps, prevState) {
-    if (this.state.cards !== prevState.cards) {
+    if (
+      this.state.cards !== prevState.cards &&
+      this.state.counter === prevState.counter
+    ) {
       this.props.geteduCards(this.state.cards);
     }
+    if (
+      this.state.shouldGetData &&
+      this.props.eduCards[0] &&
+      this.props.eduCards[0].description !== undefined
+    ) {
+      const dataToRender = [];
+      for (let card of this.props.eduCards) {
+        dataToRender.push(
+          <EducationCard
+            key={card.key}
+            educationTime={card.educationTime}
+            schoolName={card.schoolName}
+            description={card.description}
+          />
+        );
+      }
+      this.setState({
+        cards: dataToRender,
+        shouldGetData: false,
+      });
+    }
   }
+
   render() {
     return (
       <div className="education">
@@ -117,17 +143,23 @@ class Education extends Component {
           <h2>Education</h2>
           <button
             className="editButton"
-            onClick={async (e) => {
+            onClick={(e) => {
               e.preventDefault();
-              const temp = this.editMode();
-              await temp;
-              if (this.state.mode === 2) {
-                this.addDeleteCard();
-              } else {
-                this.setState({
-                  cards: this.displayData,
-                });
-              }
+              this.setState(
+                {
+                  counter: this.state.counter + 1,
+                },
+                async () => {
+                  await this.editMode();
+                  if (this.state.mode === 2 && this.state.cards.length !== 0) {
+                    this.addDeleteCard();
+                  } else {
+                    this.setState({
+                      cards: this.displayData,
+                    });
+                  }
+                }
+              );
             }}
           >
             Edit
@@ -141,9 +173,6 @@ class Education extends Component {
               this.addDeleteCard();
             }}
             cancelEducationCard={() => {
-              this.setState({
-                cards: this.displayData,
-              });
               this.editMode();
             }}
           />
@@ -158,6 +187,7 @@ class Education extends Component {
     );
   }
 }
+
 class EducationCard extends Component {
   constructor(props) {
     super();
