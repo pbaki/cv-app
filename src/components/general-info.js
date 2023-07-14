@@ -175,9 +175,9 @@ class Contact extends Component {
       this.state.shouldGetData &&
       (this.state.phone !== this.props.phone ||
         this.state.email !== this.props.email) &&
-      (this.props.email !== "" || this.props.phone !== "")
+      (this.props.email !== "" || this.props.phone !== "") &&
+      this.props.email[0]
     ) {
-      console.log("asd");
       this.setState({
         phone: this.props.phone,
         email: this.props.email,
@@ -522,9 +522,8 @@ class Skills extends Component {
     }
     if (
       this.state.shouldGetData &&
-      this.state.skillsList !== this.props.skills &&
-      this.props.skills.length !== 0 &&
-      this.state.mode === 1
+      this.props.skills[0] &&
+      this.props.skills[0].skillName !== undefined
     ) {
       const makeComponentFromProps = [];
       for (let skill of this.props.skills) {
