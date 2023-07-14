@@ -262,7 +262,9 @@ export default class AdminLogin extends Component {
 class Login extends Component {
   constructor(props) {
     super(props);
+    this.myElementRef = React.createRef();
     this.state = {
+      textAppended: false,
       email: "",
       password: "",
     };
@@ -280,9 +282,20 @@ class Login extends Component {
         this.props.getDataToRenderAfterLogin();
       })
       .catch((error) => {
+        if (!this.state.textAppended) {
+          const myElement = this.myElementRef.current;
+          if (myElement) {
+            const textNode = document.createElement("span");
+            textNode.textContent = "Wrong Email or Password.";
+            textNode.style.color = "red";
+            myElement.parentNode.insertBefore(textNode, myElement.nextSibling);
+            this.setState({ textAppended: true });
+          }
+        }
         console.log("Error login:", error);
       });
   };
+  ifWrongCredentials() {}
 
   handleLoginWithGoogle = () => {
     signInWithPopup(auth, googleProvider)
@@ -334,6 +347,7 @@ class Login extends Component {
         <input
           id="password"
           type="password"
+          ref={this.myElementRef}
           value={password}
           onChange={this.handlePasswordChange}
         />
