@@ -277,7 +277,7 @@ export default class AdminLogin extends Component {
           />
         ) : (
           <div className="afterlogin">
-            {this.state.userName === "" ? null : (
+            {this.state.mode === 0 ? null : (
               <p className="username">Welcome {this.state.userName}!</p>
             )}
             <button className="logout" onClick={this.handleLogout}>
