@@ -37,6 +37,7 @@ class Education extends Component {
     this.getInputValues.bind(this);
     this.addCards.bind(this);
     this.addDeleteCard.bind(this);
+    this.removeDeleteButton = this.removeDeleteButton.bind(this);
   }
 
   editMode() {
@@ -105,6 +106,27 @@ class Education extends Component {
       cards: this.displayData,
     });
   }
+  removeDeleteButton() {
+    const tempArray = [];
+    this.displayData.forEach((val) => {
+      if (val.props.deleteButton) {
+        tempArray.push(
+          <EducationCard
+            key={val.key}
+            educationTime={val.props.educationTime}
+            schoolName={val.props.schoolName}
+            description={val.props.description}
+          />
+        );
+      } else {
+        return val;
+      }
+    });
+    this.displayData = tempArray;
+    this.setState({
+      cards: this.displayData,
+    });
+  }
 
   componentDidUpdate(prevProps, prevState) {
     if (
@@ -154,9 +176,7 @@ class Education extends Component {
                   if (this.state.mode === 2 && this.state.cards.length !== 0) {
                     this.addDeleteCard();
                   } else {
-                    this.setState({
-                      cards: this.displayData,
-                    });
+                    this.removeDeleteButton();
                   }
                 }
               );
@@ -173,6 +193,7 @@ class Education extends Component {
               this.addDeleteCard();
             }}
             cancelEducationCard={() => {
+              this.removeDeleteButton();
               this.editMode();
             }}
           />
