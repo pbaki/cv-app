@@ -8,7 +8,13 @@ import {
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
 } from "firebase/auth";
-import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  getDoc,
+  collection,
+} from "firebase/firestore";
 import Modal from "react-modal";
 
 const firebaseConfig = {
@@ -29,6 +35,7 @@ export default class AdminLogin extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      userID: "",
       counter: 0,
       mode: 0,
       userName: "",
@@ -45,6 +52,9 @@ export default class AdminLogin extends Component {
     this.handleMode = this.handleMode.bind(this);
     this.getUserName = this.getUserName.bind(this);
     this.getDataToRenderAfterLogin = this.getDataToRenderAfterLogin.bind(this);
+    this.userID = this.userID.bind(this);
+    this.handleAddDocument = this.handleAddDocument.bind(this);
+    this.ConvertDataForFirebase = this.ConvertDataForFirebase.bind(this);
   }
 
   componentDidMount() {
@@ -127,6 +137,11 @@ export default class AdminLogin extends Component {
     }
     return { skillsArray, eduCardsArray, expCardsArray };
   }
+  userID(id) {
+    this.setState({
+      userID: id,
+    });
+  }
 
   async handleAddDocument(
     email,
@@ -137,13 +152,15 @@ export default class AdminLogin extends Component {
     skills,
     summary,
     eduCards,
-    expCards
+    expCards,
+    userID
   ) {
+    console.log(this.state.userID);
     const { skillsArray, eduCardsArray, expCardsArray } =
       this.ConvertDataForFirebase(skills, eduCards, expCards);
 
     try {
-      const docRef = doc(firestore, "Users", "TYf9bR1qDdqnlQdxmZvm");
+      const docRef = doc(firestore, "Users", userID);
       await setDoc(docRef, {
         Email: email,
         Instagram: instagram,
@@ -161,13 +178,13 @@ export default class AdminLogin extends Component {
     }
   }
 
-  async getDataToRenderAfterLogin() {
+  async getDataToRenderAfterLogin(userID) {
+    console.log(this.state.userID);
     try {
-      const docRef = doc(firestore, "Users", "TYf9bR1qDdqnlQdxmZvm");
+      const docRef = doc(firestore, "Users", userID);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         const data = docSnap.data();
-        console.log("Retrieved data:", data);
         this.props.getMail(data.Email);
         this.props.getInstagram(data.Instagram);
         this.props.getLinkedin(data.Linkedin);
@@ -227,7 +244,8 @@ export default class AdminLogin extends Component {
                   this.state.giveSkills,
                   this.state.giveSummary,
                   this.state.giveEduCards,
-                  this.state.giveExpCards
+                  this.state.giveExpCards,
+                  this.state.userID
                 );
               }
             );
@@ -244,6 +262,18 @@ export default class AdminLogin extends Component {
             handleMode={this.handleMode}
             getUserName={this.getUserName}
             getDataToRenderAfterLogin={this.getDataToRenderAfterLogin}
+            userID={this.userID}
+            handleAddDocument={this.handleAddDocument}
+            ConvertDataForFirebase={this.ConvertDataForFirebase}
+            email={this.props.email}
+            instagram={this.props.instagram}
+            linkedin={this.props.linkedin}
+            name={this.props.name}
+            phone={this.props.phone}
+            skills={this.props.skills}
+            summary={this.props.summary}
+            eduCards={this.props.eduCards}
+            expCards={this.props.expCards}
           />
         ) : (
           <div className="afterlogin">
@@ -274,19 +304,18 @@ class Login extends Component {
     };
   }
   handleLogin = () => {
-    console.log("LOGIC");
-  };
-
-  handleLogin = () => {
     const { email, password } = this.state;
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
+        console.log(userCredential);
         const user = userCredential.user;
         const email = user.email;
         const mailPart = email.match(/^(.+)@/)[1];
+        const id = user.uid;
+        this.ifAlreadyStored(id);
+        this.props.userID(id);
         this.props.getUserName(mailPart);
         this.props.handleMode();
-        this.props.getDataToRenderAfterLogin();
       })
       .catch((error) => {
         if (!this.state.textAppended) {
@@ -307,14 +336,73 @@ class Login extends Component {
     signInWithPopup(auth, googleProvider)
       .then((result) => {
         const user = result.user;
+        const id = user.uid;
+        this.ifAlreadyStored(id);
+        this.props.userID(id);
         this.props.getUserName(user.displayName);
         this.props.handleMode();
-        this.props.getDataToRenderAfterLogin();
       })
       .catch((error) => {
         console.log("Error logging in with Google:", error);
       });
   };
+  ifAlreadyStored(id) {
+    const userRef = doc(firestore, "Users", id);
+    getDoc(userRef)
+      .then((docSnapshot) => {
+        if (docSnapshot.exists()) {
+          // Document exists, load the data
+          console.log("Document already exists. Loading data...");
+          return docSnapshot.data();
+        } else {
+          // Document doesn't exist, create a new document
+          console.log("Document doesn't exist. Creating new document...");
+          const {
+            email,
+            instagram,
+            linkedin,
+            name,
+            phone,
+            skills,
+            summary,
+            eduCards,
+            expCards,
+          } = this.props;
+          const { skillsArray, eduCardsArray, expCardsArray } =
+            this.props.ConvertDataForFirebase(skills, eduCards, expCards);
+          return setDoc(userRef, {
+            Email: email,
+            Instagram: instagram,
+            Linkedin: linkedin,
+            Name: name,
+            Phone: phone,
+            Summary: summary,
+            Skills: skillsArray,
+            eduCards: eduCardsArray,
+            expCards: expCardsArray,
+          }).then(() => {
+            console.log("Document created with ID:", id);
+            return {
+              Email: email,
+              Instagram: instagram,
+              Linkedin: linkedin,
+              Name: name,
+              Phone: phone,
+              Summary: summary,
+              Skills: skillsArray,
+              eduCards: eduCardsArray,
+              expCards: expCardsArray,
+            };
+          });
+        }
+      })
+      .then((data) => {
+        this.props.getDataToRenderAfterLogin(id);
+      })
+      .catch((error) => {
+        console.error("Error accessing document:", error);
+      });
+  }
 
   handleRegisterWithEmailAndPassword = () => {
     const { email, password } = this.state;
@@ -338,11 +426,11 @@ class Login extends Component {
           isEmailInvalid: false,
           isPasswordInvalid: false,
         });
-        window.location.reload();
       })
       .catch((error) => {
         console.log("Error registering with email and password:", error);
       });
+    window.location.reload();
   };
   handleEmailChange = (e) => {
     this.setState({
@@ -434,8 +522,8 @@ class Login extends Component {
           onRequestClose={this.closeRegisterModal}
           style={{
             content: {
-              width: "400px", // Adjust the width as per your preference
-              height: "300px", // Adjust the height as per your preference
+              width: "400px",
+              height: "300px",
               margin: "auto",
             },
           }}
