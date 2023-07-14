@@ -5,21 +5,42 @@ import "../styles/experience.css";
 class Experience extends Component {
   constructor(props) {
     super();
-    this.displayData = [];
-    this.tempDisplayData = [];
+    this.displayData = [
+      <ExperienceCard
+        key={uuid()}
+        experienceTime={"1800 - 1900"}
+        companyName={"Some Name"}
+        companyPosition={"Some Position"}
+        companyDescription={
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+        }
+      />,
+      <ExperienceCard
+        key={uuid()}
+        experienceTime={"1900 - 1920"}
+        companyName={"Some Name"}
+        companyPosition={"Some Position"}
+        companyDescription={
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+        }
+      />,
+    ];
     this.inputStartYear = "";
     this.inputEndYear = "";
     this.inputCompanyName = "";
     this.inputPositionName = "";
     this.inputDescription = "";
     this.state = {
+      shouldGetData: true,
+      counter: 0,
       mode: 1,
-      cards: [],
+      cards: this.displayData,
       ifCalled: 0,
     };
     this.editMode = this.editMode.bind(this);
     this.getInputValues = this.getInputValues.bind(this);
     this.addCards = this.addCards.bind(this);
+    this.removeDeleteButton = this.removeDeleteButton.bind(this);
   }
   editMode() {
     this.setState({
@@ -50,19 +71,22 @@ class Experience extends Component {
         />
       );
     }
+
     this.setState({
       cards: this.displayData,
     });
   }
   addDeleteCard() {
-    this.displayData.forEach((val, index) => {
+    if (this.state.cards.length !== 0) {
+      this.displayData = this.state.cards;
+    }
+    const updatedData = this.displayData.map((val, index) => {
       let deleteButton2 = (
         <button
           onClick={() => {
             this.displayData.splice(index, 1);
-            this.tempDisplayData.splice(index, 1);
             this.setState({
-              cards: this.tempDisplayData,
+              cards: this.displayData,
             });
             this.addDeleteCard();
           }}
@@ -70,48 +94,68 @@ class Experience extends Component {
           Del
         </button>
       );
-
-      const ClonedElementWithMoreProps = React.cloneElement(val, {
+      return React.cloneElement(val, {
         deleteButton: deleteButton2,
       });
-      this.tempDisplayData[index] = ClonedElementWithMoreProps;
     });
+
+    this.displayData = updatedData;
+
     this.setState({
-      cards: this.tempDisplayData,
+      cards: this.displayData,
     });
   }
-  componentDidMount() {
-    if (this.state.cards.length === 0 && this.state.ifCalled === 0) {
-      this.displayData = [
-        <ExperienceCard
-          key={uuid()}
-          experienceTime={"1800 - 1900"}
-          companyName={"Some Name"}
-          companyPosition={"Some Position"}
-          companyDescription={
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-          }
-        />,
-        <ExperienceCard
-          key={uuid()}
-          experienceTime={"1900 - 1920"}
-          companyName={"Some Name"}
-          companyPosition={"Some Position"}
-          companyDescription={
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-          }
-        />,
-      ];
-      this.setState({
-        cards: this.displayData,
-        ifCalled: this.state.ifCalled + 1,
-      });
+  removeDeleteButton() {
+    const tempArray = [];
+    this.displayData.forEach((val) => {
+      if (val.props.deleteButton) {
+        tempArray.push(
+          <ExperienceCard
+            key={uuid()}
+            experienceTime={val.props.experienceTime}
+            companyName={val.props.companyName}
+            companyPosition={val.props.companyPosition}
+            companyDescription={val.props.companyDescription}
+          />
+        );
+      } else {
+        return val;
+      }
+    });
+    this.displayData = tempArray;
+    this.setState({
+      cards: this.displayData,
+    });
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (
+      this.state.cards !== prevState.cards &&
+      this.state.counter === prevState.counter
+    ) {
       this.props.getexpCards(this.state.cards);
     }
-  }
-  componentDidUpdate(prevProps, prevState) {
-    if (this.state.cards !== prevState.cards) {
-      this.props.getexpCards(this.state.cards);
+    if (
+      this.state.shouldGetData &&
+      this.props.expCards[0] &&
+      this.props.expCards[0].companyDescription !== undefined
+    ) {
+      const dataToRender = [];
+      for (let card of this.props.expCards) {
+        dataToRender.push(
+          <ExperienceCard
+            key={card.key}
+            experienceTime={card.experienceTime}
+            companyName={card.companyName}
+            companyPosition={card.companyPosition}
+            companyDescription={card.companyDescription}
+          />
+        );
+      }
+      this.setState({
+        cards: dataToRender,
+        shouldGetData: false,
+      });
     }
   }
   render() {
@@ -122,14 +166,19 @@ class Experience extends Component {
           <button
             className="editButton"
             onClick={async () => {
-              await this.editMode();
-              if (this.state.mode === 1) {
-                this.setState({
-                  cards: this.displayData,
-                });
-              } else {
-                this.addDeleteCard();
-              }
+              this.setState(
+                {
+                  counter: this.state.counter + 1,
+                },
+                async () => {
+                  await this.editMode();
+                  if (this.state.mode === 2 && this.state.cards.length !== 0) {
+                    this.addDeleteCard();
+                  } else {
+                    this.removeDeleteButton();
+                  }
+                }
+              );
             }}
           >
             Edit
@@ -143,9 +192,7 @@ class Experience extends Component {
               this.addDeleteCard();
             }}
             cancelExperienceCard={() => {
-              this.setState({
-                cards: this.displayData,
-              });
+              this.removeDeleteButton();
               this.editMode();
             }}
           />
