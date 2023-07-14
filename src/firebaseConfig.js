@@ -9,6 +9,7 @@ import {
   createUserWithEmailAndPassword,
 } from "firebase/auth";
 import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
+import Modal from "react-modal";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDoaIbqf6CJfMH-EMlkwPu1xEQo4-76YdE",
@@ -267,8 +268,14 @@ class Login extends Component {
       textAppended: false,
       email: "",
       password: "",
+      isRegisterModalOpen: false,
+      isEmailInvalid: false,
+      isPasswordInvalid: false,
     };
   }
+  handleLogin = () => {
+    console.log("LOGIC");
+  };
 
   handleLogin = () => {
     const { email, password } = this.state;
@@ -295,7 +302,6 @@ class Login extends Component {
         console.log("Error login:", error);
       });
   };
-  ifWrongCredentials() {}
 
   handleLoginWithGoogle = () => {
     signInWithPopup(auth, googleProvider)
@@ -312,28 +318,76 @@ class Login extends Component {
 
   handleRegisterWithEmailAndPassword = () => {
     const { email, password } = this.state;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      this.setState({ isEmailInvalid: true });
+      return;
+    }
+    if (password.length < 6) {
+      this.setState({ isPasswordInvalid: true });
+      return;
+    }
+
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
         this.props.getUserName(user.email);
         this.props.handleMode();
+        this.setState({
+          isRegisterModalOpen: false,
+          isEmailInvalid: false,
+          isPasswordInvalid: false,
+        });
+        window.location.reload();
       })
       .catch((error) => {
         console.log("Error registering with email and password:", error);
       });
   };
-
   handleEmailChange = (e) => {
-    this.setState({ email: e.target.value });
+    this.setState({
+      email: e.target.value,
+      isEmailInvalid: false,
+      isPasswordInvalid: false,
+    });
   };
 
   handlePasswordChange = (e) => {
+    this.setState({
+      password: e.target.value,
+      isEmailInvalid: false,
+      isPasswordInvalid: false,
+    });
+  };
+
+  openRegisterModal = () => {
+    this.setState({ isRegisterModalOpen: true });
+  };
+
+  closeRegisterModal = () => {
+    this.setState({
+      isRegisterModalOpen: false,
+      isEmailInvalid: false,
+      isPasswordInvalid: false,
+    });
+  };
+
+  handleEmailChange1 = (e) => {
+    this.setState({ email: e.target.value });
+  };
+
+  handlePasswordChange1 = (e) => {
     this.setState({ password: e.target.value });
   };
 
   render() {
-    const { email, password } = this.state;
-
+    const {
+      email,
+      password,
+      isRegisterModalOpen,
+      isEmailInvalid,
+      isPasswordInvalid,
+    } = this.state;
     return (
       <div className="login-form">
         <label htmlFor="email">Email: </label>
@@ -341,25 +395,27 @@ class Login extends Component {
           id="email"
           type="email"
           value={email}
-          onChange={this.handleEmailChange}
+          onChange={this.handleEmailChange1}
         />
+        {isEmailInvalid && (
+          <span style={{ color: "red", display: "block" }}>
+            Invalid email format
+          </span>
+        )}
         <label htmlFor="password">Password: </label>
         <input
           id="password"
           type="password"
           ref={this.myElementRef}
           value={password}
-          onChange={this.handlePasswordChange}
+          onChange={this.handlePasswordChange1}
         />
         <div className="loginRegisterButtonContainer">
           <div className="loginregisterButtons">
             <button className="normalLogin" onClick={this.handleLogin}>
               Login
             </button>
-            <button
-              className="normalRegister"
-              onClick={this.handleRegisterWithEmailAndPassword}
-            >
+            <button className="normalRegister" onClick={this.openRegisterModal}>
               Register
             </button>
           </div>
@@ -372,6 +428,46 @@ class Login extends Component {
             </button>
           </div>
         </div>
+
+        <Modal
+          isOpen={isRegisterModalOpen}
+          onRequestClose={this.closeRegisterModal}
+          style={{
+            content: {
+              width: "400px", // Adjust the width as per your preference
+              height: "300px", // Adjust the height as per your preference
+              margin: "auto",
+            },
+          }}
+        >
+          <h2>Register</h2>
+          <label htmlFor="registerEmail">Email:</label>
+          <input
+            id="registerEmail"
+            type="email"
+            value={email}
+            onChange={this.handleEmailChange}
+          />
+          {isEmailInvalid && (
+            <span className="error-message">Invalid email format</span>
+          )}
+          <label htmlFor="registerPassword">Password:</label>
+          <input
+            id="registerPassword"
+            type="password"
+            value={password}
+            onChange={this.handlePasswordChange}
+          />
+          {isPasswordInvalid && (
+            <span className="error-message">
+              Password should have a minimum of 6 characters
+            </span>
+          )}
+          <button onClick={this.handleRegisterWithEmailAndPassword}>
+            Register
+          </button>
+          <button onClick={this.closeRegisterModal}>Close</button>
+        </Modal>
       </div>
     );
   }
