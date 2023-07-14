@@ -48,6 +48,7 @@ export default class AdminLogin extends Component {
       giveSummary: props.summary,
       giveEduCards: props.eduCards,
       giveExpCards: props.expCards,
+      shouldCloseWindow: false,
     };
     this.handleMode = this.handleMode.bind(this);
     this.getUserName = this.getUserName.bind(this);
@@ -55,16 +56,6 @@ export default class AdminLogin extends Component {
     this.userID = this.userID.bind(this);
     this.handleAddDocument = this.handleAddDocument.bind(this);
     this.ConvertDataForFirebase = this.ConvertDataForFirebase.bind(this);
-  }
-
-  componentDidMount() {
-    // Check if user is already logged in
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        this.getUserName(user.displayName);
-        this.handleMode();
-      }
-    });
   }
 
   handleMode() {
@@ -88,6 +79,7 @@ export default class AdminLogin extends Component {
       window.location.reload();
     });
   };
+
   ConvertDataForFirebase(skills, eduCards, expCards) {
     const skillsArray = [];
     if (
@@ -137,6 +129,7 @@ export default class AdminLogin extends Component {
     }
     return { skillsArray, eduCardsArray, expCardsArray };
   }
+
   userID(id) {
     this.setState({
       userID: id,
@@ -203,6 +196,16 @@ export default class AdminLogin extends Component {
       console.error("Error fetching data:", error);
     }
   }
+
+  componentDidMount() {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        this.getUserName(user.displayName);
+        this.handleMode();
+      }
+    });
+  }
+
   componentDidUpdate(prevProps, prevState) {
     if (
       this.state.mode === 1 &&
@@ -254,6 +257,26 @@ export default class AdminLogin extends Component {
       );
     }
   }
+
+  handlePopupMessage = (event) => {
+    if (event.origin === window.location.origin) {
+      const { isLoggedIn } = event.data;
+      if (isLoggedIn) {
+        this.props.handleMode();
+      } else {
+        // Handle the case when login fails
+      }
+    }
+  };
+
+  componentWillUnmount() {
+    window.removeEventListener("message", this.handlePopupMessage);
+  }
+
+  handleLoginSuccess = () => {
+    this.handleMode();
+  };
+
   render() {
     return (
       <>
@@ -274,6 +297,7 @@ export default class AdminLogin extends Component {
             summary={this.props.summary}
             eduCards={this.props.eduCards}
             expCards={this.props.expCards}
+            handleLoginSuccess={this.handleLoginSuccess}
           />
         ) : (
           <div className="afterlogin">
@@ -307,7 +331,6 @@ class Login extends Component {
     const { email, password } = this.state;
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        console.log(userCredential);
         const user = userCredential.user;
         const email = user.email;
         const mailPart = email.match(/^(.+)@/)[1];
@@ -346,6 +369,7 @@ class Login extends Component {
         console.log("Error logging in with Google:", error);
       });
   };
+
   ifAlreadyStored(id) {
     const userRef = doc(firestore, "Users", id);
     getDoc(userRef)
@@ -430,7 +454,6 @@ class Login extends Component {
       .catch((error) => {
         console.log("Error registering with email and password:", error);
       });
-    window.location.reload();
   };
   handleEmailChange = (e) => {
     this.setState({
