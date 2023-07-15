@@ -410,6 +410,7 @@ class Login extends Component {
       .catch((error) => {
         console.log("Error registering with email and password:", error);
       });
+    window.location.reload();
   };
   handleEmailChange = (e) => {
     this.setState({
