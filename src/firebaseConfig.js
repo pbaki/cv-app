@@ -148,7 +148,6 @@ export default class AdminLogin extends Component {
     expCards,
     userID
   ) {
-    console.log(this.state.userID);
     const { skillsArray, eduCardsArray, expCardsArray } =
       this.ConvertDataForFirebase(skills, eduCards, expCards);
 
@@ -172,7 +171,6 @@ export default class AdminLogin extends Component {
   }
 
   async getDataToRenderAfterLogin(userID) {
-    console.log(this.state.userID);
     try {
       const docRef = doc(firestore, "Users", userID);
       const docSnap = await getDoc(docRef);
@@ -195,15 +193,6 @@ export default class AdminLogin extends Component {
     } catch (error) {
       console.error("Error fetching data:", error);
     }
-  }
-
-  componentDidMount() {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        this.getUserName(user.displayName);
-        this.handleMode();
-      }
-    });
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -257,25 +246,6 @@ export default class AdminLogin extends Component {
       );
     }
   }
-
-  handlePopupMessage = (event) => {
-    if (event.origin === window.location.origin) {
-      const { isLoggedIn } = event.data;
-      if (isLoggedIn) {
-        this.props.handleMode();
-      } else {
-        // Handle the case when login fails
-      }
-    }
-  };
-
-  componentWillUnmount() {
-    window.removeEventListener("message", this.handlePopupMessage);
-  }
-
-  handleLoginSuccess = () => {
-    this.handleMode();
-  };
 
   render() {
     return (
@@ -361,8 +331,8 @@ class Login extends Component {
         const user = result.user;
         const id = user.uid;
         this.ifAlreadyStored(id);
-        this.props.userID(id);
         this.props.getUserName(user.displayName);
+        this.props.userID(id);
         this.props.handleMode();
       })
       .catch((error) => {
@@ -372,6 +342,17 @@ class Login extends Component {
 
   ifAlreadyStored(id) {
     const userRef = doc(firestore, "Users", id);
+    const {
+      email,
+      instagram,
+      linkedin,
+      name,
+      phone,
+      skills,
+      summary,
+      eduCards,
+      expCards,
+    } = this.props;
     getDoc(userRef)
       .then((docSnapshot) => {
         if (docSnapshot.exists()) {
@@ -381,7 +362,7 @@ class Login extends Component {
         } else {
           // Document doesn't exist, create a new document
           console.log("Document doesn't exist. Creating new document...");
-          const {
+          this.props.handleAddDocument(
             email,
             instagram,
             linkedin,
@@ -391,43 +372,18 @@ class Login extends Component {
             summary,
             eduCards,
             expCards,
-          } = this.props;
-          const { skillsArray, eduCardsArray, expCardsArray } =
-            this.props.ConvertDataForFirebase(skills, eduCards, expCards);
-          return setDoc(userRef, {
-            Email: email,
-            Instagram: instagram,
-            Linkedin: linkedin,
-            Name: name,
-            Phone: phone,
-            Summary: summary,
-            Skills: skillsArray,
-            eduCards: eduCardsArray,
-            expCards: expCardsArray,
-          }).then(() => {
-            console.log("Document created with ID:", id);
-            return {
-              Email: email,
-              Instagram: instagram,
-              Linkedin: linkedin,
-              Name: name,
-              Phone: phone,
-              Summary: summary,
-              Skills: skillsArray,
-              eduCards: eduCardsArray,
-              expCards: expCardsArray,
-            };
-          });
+            id
+          );
         }
       })
-      .then((data) => {
+      .then(() => {
         this.props.getDataToRenderAfterLogin(id);
       })
+      .then(() => {})
       .catch((error) => {
         console.error("Error accessing document:", error);
       });
   }
-
   handleRegisterWithEmailAndPassword = () => {
     const { email, password } = this.state;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
