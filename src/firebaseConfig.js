@@ -295,6 +295,7 @@ class Login extends Component {
       isRegisterModalOpen: false,
       isEmailInvalid: false,
       isPasswordInvalid: false,
+      userExists: false,
     };
   }
   handleLogin = () => {
@@ -395,22 +396,18 @@ class Login extends Component {
       this.setState({ isPasswordInvalid: true });
       return;
     }
-
     createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        this.props.getUserName(user.email);
-        this.props.handleMode();
+      .then(() => {
         this.setState({
           isRegisterModalOpen: false,
           isEmailInvalid: false,
           isPasswordInvalid: false,
+          userExists: false,
         });
       })
       .catch((error) => {
-        console.log("Error registering with email and password:", error);
+        this.setState({ userExists: true });
       });
-    window.location.reload();
   };
   handleEmailChange = (e) => {
     this.setState({
@@ -455,6 +452,7 @@ class Login extends Component {
       isRegisterModalOpen,
       isEmailInvalid,
       isPasswordInvalid,
+      userExists,
     } = this.state;
     return (
       <div className="login-form">
@@ -530,6 +528,9 @@ class Login extends Component {
             <span className="error-message">
               Password should have a minimum of 6 characters
             </span>
+          )}
+          {userExists && (
+            <span className="error-message">User already exists</span>
           )}
           <button onClick={this.handleRegisterWithEmailAndPassword}>
             Register
