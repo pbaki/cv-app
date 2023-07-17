@@ -6,6 +6,6 @@ Allows to Register and Log in using email/password or Google account
 While logged in, progress is saved in Firestore Database when data is submitted or added/deleted.
 
 ## Available at
-Github Pages: [pbaki.github.io/cv-app/](pbaki.github.io/cv-app/)
+Github Pages: [pbaki.github.io/cv-app/](https://pbaki.github.io/cv-app/)
 <br>
-Firebase Hosted website: [cvapp-ac053.firebaseapp.com](cvapp-ac053.firebaseapp.com)
+Firebase Hosted website: [cvapp-ac053.firebaseapp.com](https://cvapp-ac053.firebaseapp.com)
